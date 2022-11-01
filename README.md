@@ -22,27 +22,26 @@ AWS_BUCKET=...
 Les droits nécessaires minimums du profil sont les suivants :
 
 ```
-
 {
-"Version": "2012-10-17",
-"Statement": [
-{
-//Permission de lister tous les data objects de notre organisation
-"Effect": "Allow",
-"Action": "s3:ListAllMyBuckets",
-"Resource": "arn:aws:s3:::*"
-},
-{
-//Permission totale sur les data objects respectant cette nomenclature
-//[XX] Etant la référence de votre équipe
-"Effect": "Allow",
-"Action": "s3:*",
-"Resource": [
-"arn:aws:s3:::amt.team[XX].diduno.education",
-"arn:aws:s3:::amt.team[XX].diduno.education/*"
-]
-}
-]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            //Permission de lister tous les data objects de notre organisation
+            "Effect": "Allow",
+            "Action": "s3:ListAllMyBuckets",
+            "Resource": "arn:aws:s3:::*"
+        },
+        {   
+            //Permission totale sur les data objects respectant cette nomenclature
+            //[XX] Etant la référence de votre équipe
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::amt.team[XX].diduno.education",
+                "arn:aws:s3:::amt.team[XX].diduno.education/*"
+            ]
+        }
+    ]
 }
 
 ```
