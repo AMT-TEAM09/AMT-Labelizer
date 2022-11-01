@@ -51,25 +51,19 @@ Les droits nécessaires minimums du profil sont les suivants :
 Pour compiler et lancer les tests
 
 ```
-
 mvn test
-
 ```
 
 Pour lancer une classe de tests spécifique
 
 ```
-
 mvn -Dtest=NomDeLaClasseDeTest test
-
 ```
 
 Pour lancer un test spécifique
 
 ```
-
 mvn -Dtest=NomDeLaClasseDeTest#nomDuTest test
-
 ```
 
 [Plus d'infos](https://maven.apache.org/surefire/maven-surefire-plugin/examples/single-test.html)
@@ -77,27 +71,25 @@ mvn -Dtest=NomDeLaClasseDeTest#nomDuTest test
 ## Structure
 
 ```
-
 AMT-TestAws
-├───.idea
-├───src
-│ ├───main
-│ │ └───java
-│ │ ├───impl
-│ │ │ └───aws
-│ │ ├───interfaces
-│ │ └───util
-│ └───test
-│ ├───java
-│ │ └───impl
-│ │ └───aws
-│ └───resources
-└───target
-├───classes
-│ ├───impl
-│ │ └───aws
-│ └───interfaces
-└───generated-sources
-└───annotations
-
+    ├─── .idea
+    ├─── src
+    │     ├─── main
+    │     │     └─── java
+    │     │           ├─── impl
+    │     │           │     └───aws
+    │     │           ├─── interfaces
+    │     │           └─── util
+    │     └─── test
+    │           ├─── java
+    │           │     └─── impl
+    │           │           └─── aws
+    │           └─── resources
+    └─── target
+           ├─── classes
+           │      ├─── impl
+           │      │     └─── aws
+           │      └─── interfaces
+           └─── generated-sources
+                  └─── annotations
 ```
