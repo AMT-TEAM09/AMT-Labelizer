@@ -4,15 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a58d9305-6881-48cf-9d70-3642abd13724" name="Changes" comment="Mise à jour de divers fichiers">
-      <change afterPath="$PROJECT_DIR$/src/main/java/impl/aws/AwsLabelDetector.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interfaces/LabelDetector.java" afterDir="false" />
+    <list default="true" id="a58d9305-6881-48cf-9d70-3642abd13724" name="Changes" comment="Création de l'architecture">
+      <change afterPath="$PROJECT_DIR$/src/test/java/impl/aws/AwsDataObjectHelperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/impl/aws/AwsLabelDetectorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/image.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/impl/aws/AwsBucket.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/impl/aws/AwsDataObjectHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/impl/aws/AwsBucketManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/impl/aws/AwsCloudClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interfaces/Bucket.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interfaces/DataObjectHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interfaces/BucketManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interfaces/CloudClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/impl/aws/AwsCloudClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/impl/aws/AwsCloudClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/impl/aws/AwsDataObjectHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/impl/aws/AwsDataObjectHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/impl/aws/AwsLabelDetector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/impl/aws/AwsLabelDetector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/interfaces/CloudClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interfaces/CloudClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/interfaces/LabelDetector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interfaces/LabelDetector.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +27,8 @@
       <list>
         <option value="Interface" />
         <option value="Class" />
+        <option value="JUnit3 Test Class" />
+        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
@@ -53,21 +58,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "actions.on.save"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit3&quot;: &quot;junit.framework.TestCase&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+      <recent name="junit.framework.TestCase" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\HEIG\S5\AMT\Labos\AMT-TestAws\src\test\resources" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="impl.aws" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="App" />
@@ -97,7 +118,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1666096026700</updated>
-      <workItem from="1666096029314" duration="8173000" />
+      <workItem from="1666096029314" duration="9169000" />
+      <workItem from="1666712203094" duration="1806000" />
+      <workItem from="1666778544194" duration="597000" />
+      <workItem from="1666779193718" duration="4256000" />
+      <workItem from="1667304997944" duration="613000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1666096372206</created>
@@ -120,11 +145,22 @@
       <option name="project" value="LOCAL" />
       <updated>1666103450943</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Création de l'architecture">
+      <created>1666107861138</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1666107861138</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:software.amazon.awssdk:dynamodb" />
+    <option featureType="dependencySupport" implementationName="java:software.amazon.awssdk:sdk-core" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -141,7 +177,8 @@
     <MESSAGE value="Initial commit" />
     <MESSAGE value="Mise à jour du gitignore" />
     <MESSAGE value="Mise à jour de divers fichiers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Mise à jour de divers fichiers" />
+    <MESSAGE value="Création de l'architecture" />
+    <option name="LAST_COMMIT_MESSAGE" value="Création de l'architecture" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
