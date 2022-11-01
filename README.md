@@ -2,6 +2,11 @@
 
 ### Auteurs : Stéphane Marengo & Géraud Silvestri
 
+## Pré-requis
+
+La version 19 de Java est requise pour lancer le projet. Il faut aussi que la variable d'environnement JAVA_HOME soit
+définie.
+
 ## Installation
 
 Pour installer toutes les dépendances, faire la commande suivante :
