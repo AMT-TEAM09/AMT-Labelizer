@@ -50,18 +50,27 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     }
 
     @Override
+    public boolean exists() {
+        return bucketExists();
+    }
+
+    @Override
     public boolean exists(String objectName) {
-        return objectExists(objectName) || bucketExists();
+        return objectExists(objectName);
+    }
+
+    @Override
+    public void delete() {
+        if (!bucketExists())
+            return;
+
+        deleteBucket();
     }
 
     @Override
     public void delete(String objectName) {
-        if (!exists(objectName)) {
-            if (bucketExists()) {
-                deleteBucket();
-            }
+        if (!objectExists(objectName))
             return;
-        }
 
         var request = DeleteObjectRequest.builder()
                 .bucket(bucketName)
@@ -72,14 +81,12 @@ public class AwsDataObjectHelper implements DataObjectHelper {
 
     @Override
     public URL publish(String objectName) {
-        var objectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(objectName)
-                .build();
-
         var presignRequest = GetObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(60))
-                .getObjectRequest(objectRequest)
+                .getObjectRequest(b -> {
+                    b.bucket(bucketName);
+                    b.key(objectName);
+                })
                 .build();
 
         var result = presigner.presignGetObject(presignRequest);

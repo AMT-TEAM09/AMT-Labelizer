@@ -11,6 +11,10 @@ public interface DataObjectHelper {
 
     boolean exists(String objectName);
 
+    boolean exists();
+
+    void delete();
+
     void delete(String objectName);
 
     URL publish(String objectName);

@@ -20,17 +20,19 @@ class AwsDataObjectHelperTest {
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String TEST_OBJECT_NAME = "test-object";
+    private Region region;
+    private ProfileCredentialsProvider credentialsProvider;
     private AwsDataObjectHelper objectHelper;
-    private String bucketName;
 
     @BeforeEach
     void setUp() {
         Dotenv dotenv = Dotenv.configure().load();
 
+        var bucketName = dotenv.get("AWS_BUCKET_NAME");
         var profile = dotenv.get("AWS_PROFILE");
-        var region = Region.of(dotenv.get("AWS_REGION"));
-        var credentialsProvider = ProfileCredentialsProvider.create(profile);
-        bucketName = dotenv.get("AWS_BUCKET_NAME");
+
+        region = Region.of(dotenv.get("AWS_REGION"));
+        credentialsProvider = ProfileCredentialsProvider.create(profile);
 
         objectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
     }
@@ -45,7 +47,7 @@ class AwsDataObjectHelperTest {
     @Test
     void create_bucketExists_success() {
         // given
-        assertTrue(objectHelper.exists(bucketName));
+        assertTrue(objectHelper.exists());
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
@@ -76,7 +78,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void exists_nominalCase_success() {
+    void exists_objectNominalCase_success() {
         // given
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
         objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE);
@@ -86,6 +88,19 @@ class AwsDataObjectHelperTest {
 
         // then
         assertTrue(exists);
+    }
+
+    @Test
+    void exists_bucketNotExists_success() {
+        // given
+        var bucketName = "not-existing-bucket";
+        var objectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
+
+        // when
+        var exists = objectHelper.exists();
+
+        // then
+        assertFalse(exists);
     }
 
     @Test
@@ -103,6 +118,7 @@ class AwsDataObjectHelperTest {
     @Test
     void delete_objectNotExists_success() {
         // given
+        assertTrue(objectHelper.exists());
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
@@ -146,6 +162,7 @@ class AwsDataObjectHelperTest {
     @Test
     void publish_objectNotExists_success() {
         // given
+        assertTrue(objectHelper.exists());
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
