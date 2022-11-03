@@ -3,12 +3,13 @@ package impl.aws;
 import interfaces.CloudClient;
 import io.github.cdimascio.dotenv.Dotenv;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 
 public class AwsCloudClient implements CloudClient {
-    private static String bucketName;
-    private static ProfileCredentialsProvider credentialsProvider;
     private static AwsCloudClient instance;
-
+    private final String bucketName;
+    private final ProfileCredentialsProvider credentialsProvider;
+    private final Region region;
     private AwsDataObjectHelper dataObjectHelper;
     private AwsLabelDetector labelDetector;
 
@@ -19,6 +20,8 @@ public class AwsCloudClient implements CloudClient {
 
         var profile = dotenv.get("AWS_PROFILE");
         credentialsProvider = ProfileCredentialsProvider.create(profile);
+
+        region = Region.of(dotenv.get("AWS_REGION"));
     }
 
     public static AwsCloudClient getInstance() {
@@ -29,28 +32,13 @@ public class AwsCloudClient implements CloudClient {
         return instance;
     }
 
-    private static void throwIfMissingCredentials() {
-        if (credentialsProvider == null) {
-            throw new RuntimeException("Credentials provider not set");
-        }
-    }
-
-    private static void throwIfMissingBucketName() {
-        if (bucketName == null) {
-            throw new RuntimeException("Bucket name not set");
-        }
-    }
-
     @Override
     public AwsDataObjectHelper getDataObjectHelper() {
         if (dataObjectHelper != null) {
             return dataObjectHelper;
         }
 
-        throwIfMissingBucketName();
-        throwIfMissingCredentials();
-
-        return dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName);
+        return dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
     }
 
     @Override
@@ -59,8 +47,6 @@ public class AwsCloudClient implements CloudClient {
             return labelDetector;
         }
 
-        throwIfMissingCredentials();
-
-        return labelDetector = new AwsLabelDetector(credentialsProvider);
+        return labelDetector = new AwsLabelDetector(credentialsProvider, region);
     }
 }
