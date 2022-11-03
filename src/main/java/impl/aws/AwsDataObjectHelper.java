@@ -81,6 +81,9 @@ public class AwsDataObjectHelper implements DataObjectHelper {
 
     @Override
     public URL publish(String objectName) {
+        if (!objectExists(objectName))
+            return null;
+
         var presignRequest = GetObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(60))
                 .getObjectRequest(b -> {

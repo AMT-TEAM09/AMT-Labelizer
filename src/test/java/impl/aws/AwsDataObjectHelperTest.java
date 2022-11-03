@@ -153,7 +153,6 @@ class AwsDataObjectHelperTest {
 
         // then
         var huc = (HttpURLConnection) url.openConnection();
-        huc.setRequestMethod("HEAD");
         var responseCode = huc.getResponseCode();
 
         assertEquals(200, responseCode);
@@ -163,7 +162,7 @@ class AwsDataObjectHelperTest {
     void publish_objectNotExists_success() {
         // given
         assertTrue(objectHelper.exists());
-        assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
+        assertFalse(objectHelper.exists(TEST_OBJECT_NAME + "1"));
 
         // when
         var url = objectHelper.publish(TEST_OBJECT_NAME);
