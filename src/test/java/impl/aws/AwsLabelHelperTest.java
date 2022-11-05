@@ -51,7 +51,7 @@ class AwsLabelHelperTest {
         assertEquals(200, responseCode);
 
         // when
-        var labels = labelHelper.Execute(imageUrl.toString(), params);
+        var labels = labelHelper.execute(imageUrl.toString(), params);
 
         // then
         assertEquals("Beaver", labels);
@@ -65,7 +65,7 @@ class AwsLabelHelperTest {
         var params = new int[]{};
 
         // when
-        var labels = labelHelper.ExecuteFromBase64(imageString, params);
+        var labels = labelHelper.executeFromBase64(imageString, params);
 
         // then
         assertEquals("Beaver", labels);
@@ -78,6 +78,6 @@ class AwsLabelHelperTest {
         var params = new int[]{};
 
         // then
-        assertThrows(InvalidImageFormatException.class, () -> labelHelper.ExecuteFromBase64(imageString, params));
+        assertThrows(InvalidImageFormatException.class, () -> labelHelper.executeFromBase64(imageString, params));
     }
 }

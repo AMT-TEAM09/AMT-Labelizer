@@ -1,17 +1,17 @@
 package impl.aws;
 
 import interfaces.LabelHelper;
+import models.Label;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsRequest;
-import software.amazon.awssdk.services.rekognition.model.Label;
+import software.amazon.awssdk.services.rekognition.model.DetectLabelsResponse;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
-import java.util.List;
 
 public class AwsLabelHelper implements LabelHelper {
     private final RekognitionClient client;
@@ -24,7 +24,7 @@ public class AwsLabelHelper implements LabelHelper {
     }
 
     @Override
-    public String Execute(String imageUrl, int[] params) throws IOException {
+    public Label[] execute(String imageUrl, int[] params) throws IOException {
         var url = new URL(imageUrl);
         byte[] imageBytes;
 
@@ -36,13 +36,13 @@ public class AwsLabelHelper implements LabelHelper {
                 .image(b -> b.bytes(SdkBytes.fromByteArray(imageBytes)))
                 .build();
 
-        var response = client.detectLabels(request);
+        var response = executeRequest(request);
 
-        return labelsToJson(response.labels());
+        return responseToArray(response);
     }
 
     @Override
-    public String ExecuteFromBase64(String base64, int[] params) {
+    public Label[] executeFromBase64(String base64, int[] params) {
         var decoded = Base64.getDecoder().decode(base64);
         var imageBytes = SdkBytes.fromByteArray(decoded);
 
@@ -50,14 +50,19 @@ public class AwsLabelHelper implements LabelHelper {
                 .image(b -> b.bytes(imageBytes))
                 .build();
 
-        var response = client.detectLabels(request);
-        return labelsToJson(response.labels());
+        var response = executeRequest(request);
+        return responseToArray(response);
     }
 
-    private String labelsToJson(List<Label> labels) {
+    private DetectLabelsResponse executeRequest(DetectLabelsRequest request) {
+        return client.detectLabels(request);
+    }
+
+    private Label[] responseToArray(DetectLabelsResponse response) {
+        var labels = response.labels();
+
         return labels.stream()
-                .map(label -> String.format("{\"name\": \"%s\", \"confidence\": %f}", label.name(), label.confidence()))
-                .reduce((a, b) -> a + ", " + b)
-                .orElse("");
+                .map(l -> new Label(l.name(), l.confidence()))
+                .toArray(Label[]::new);
     }
 }
