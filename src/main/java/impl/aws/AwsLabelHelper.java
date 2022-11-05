@@ -8,6 +8,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectLabelsResponse;
+import software.amazon.awssdk.services.rekognition.model.Image;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,11 +33,11 @@ public class AwsLabelHelper implements LabelHelper {
             imageBytes = stream.readAllBytes();
         }
 
-        var request = DetectLabelsRequest.builder()
-                .image(b -> b.bytes(SdkBytes.fromByteArray(imageBytes)))
+        var image = Image.builder()
+                .bytes(SdkBytes.fromByteArray(imageBytes))
                 .build();
 
-        var response = executeRequest(request);
+        var response = executeRequest(image);
 
         return responseToArray(response);
     }
@@ -46,15 +47,19 @@ public class AwsLabelHelper implements LabelHelper {
         var decoded = Base64.getDecoder().decode(base64);
         var imageBytes = SdkBytes.fromByteArray(decoded);
 
-        var request = DetectLabelsRequest.builder()
-                .image(b -> b.bytes(imageBytes))
+        var image = Image.builder()
+                .bytes(imageBytes)
                 .build();
 
-        var response = executeRequest(request);
+        var response = executeRequest(image);
         return responseToArray(response);
     }
 
-    private DetectLabelsResponse executeRequest(DetectLabelsRequest request) {
+    private DetectLabelsResponse executeRequest(Image image) {
+        var request = DetectLabelsRequest.builder()
+                .image(image)
+                .build();
+
         return client.detectLabels(request);
     }
 
