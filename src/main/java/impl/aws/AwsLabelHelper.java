@@ -13,8 +13,11 @@ import software.amazon.awssdk.services.rekognition.model.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.function.Consumer;
 
 public class AwsLabelHelper implements LabelHelper {
+    private static final Consumer<LabelOptions.Builder> NO_OPTIONS = b -> {
+    };
     private final RekognitionClient client;
 
     public AwsLabelHelper(ProfileCredentialsProvider credentialsProvider, Region region) {
@@ -25,7 +28,12 @@ public class AwsLabelHelper implements LabelHelper {
     }
 
     @Override
-    public Label[] execute(String imageUrl, int[] params) throws IOException {
+    public Label[] execute(String imageUrl) throws IOException {
+        return execute(imageUrl, NO_OPTIONS);
+    }
+
+    @Override
+    public Label[] execute(String imageUrl, Consumer<LabelOptions.Builder> options) throws IOException {
         var url = new URL(imageUrl);
         byte[] imageBytes;
 
@@ -37,13 +45,16 @@ public class AwsLabelHelper implements LabelHelper {
                 .bytes(SdkBytes.fromByteArray(imageBytes))
                 .build();
 
-        var response = executeRequest(image);
-
-        return responseToArray(response);
+        return executeRequest(image, options);
     }
 
     @Override
-    public Label[] executeFromBase64(String base64, int[] params) {
+    public Label[] executeFromBase64(String base64) {
+        return executeFromBase64(base64, NO_OPTIONS);
+    }
+
+    @Override
+    public Label[] executeFromBase64(String base64, Consumer<LabelOptions.Builder> options) {
         var decoded = Base64.getDecoder().decode(base64);
         var imageBytes = SdkBytes.fromByteArray(decoded);
 
@@ -51,16 +62,23 @@ public class AwsLabelHelper implements LabelHelper {
                 .bytes(imageBytes)
                 .build();
 
-        var response = executeRequest(image);
-        return responseToArray(response);
+        return executeRequest(image, options);
     }
 
-    private DetectLabelsResponse executeRequest(Image image) {
-        var request = DetectLabelsRequest.builder()
-                .image(image)
-                .build();
+    private Label[] executeRequest(Image image, Consumer<LabelOptions.Builder> optionsOperations) {
+        var requestBuilder = DetectLabelsRequest.builder()
+                .image(image);
 
-        return client.detectLabels(request);
+        var builder = LabelOptions.builder();
+        optionsOperations.accept(builder);
+        var options = builder.build();
+
+        options.maxLabels().ifPresent(requestBuilder::maxLabels);
+        options.minConfidence().ifPresent(requestBuilder::minConfidence);
+
+        var response = client.detectLabels(requestBuilder.build());
+
+        return responseToArray(response);
     }
 
     private Label[] responseToArray(DetectLabelsResponse response) {
