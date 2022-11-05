@@ -1,6 +1,6 @@
-package impl.aws;
+package ch.heigvd.amt.team09.impl.aws;
 
-import interfaces.DataObjectHelper;
+import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;

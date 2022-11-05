@@ -1,6 +1,6 @@
-package interfaces;
+package ch.heigvd.amt.team09.interfaces;
 
-import interfaces.LabelHelper.LabelOptions;
+import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
 
 import java.io.IOException;
 import java.util.function.Consumer;

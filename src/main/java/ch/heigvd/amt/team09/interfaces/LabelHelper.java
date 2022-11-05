@@ -1,6 +1,6 @@
-package interfaces;
+package ch.heigvd.amt.team09.interfaces;
 
-import models.Label;
+import ch.heigvd.amt.team09.models.Label;
 
 import java.io.IOException;
 import java.util.ArrayList;

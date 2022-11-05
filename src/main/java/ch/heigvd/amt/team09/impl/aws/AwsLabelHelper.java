@@ -1,7 +1,7 @@
-package impl.aws;
+package ch.heigvd.amt.team09.impl.aws;
 
-import interfaces.LabelHelper;
-import models.Label;
+import ch.heigvd.amt.team09.interfaces.LabelHelper;
+import ch.heigvd.amt.team09.models.Label;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;

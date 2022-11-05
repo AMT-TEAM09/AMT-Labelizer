@@ -1,12 +1,12 @@
-package impl.aws;
+package ch.heigvd.amt.team09.impl.aws;
 
-import interfaces.CloudClient;
-import interfaces.LabelHelper.LabelOptions;
+import ch.heigvd.amt.team09.interfaces.CloudClient;
+import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
+import ch.heigvd.amt.team09.util.FilesHelper;
+import ch.heigvd.amt.team09.util.JsonHelper;
 import io.github.cdimascio.dotenv.Dotenv;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import util.FilesHelper;
-import util.JsonHelper;
 
 import java.io.IOException;
 import java.nio.file.Files;

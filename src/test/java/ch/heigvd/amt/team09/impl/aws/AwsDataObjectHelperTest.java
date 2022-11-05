@@ -1,4 +1,4 @@
-package impl.aws;
+package ch.heigvd.amt.team09.impl.aws;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.AfterEach;

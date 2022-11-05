@@ -1,4 +1,4 @@
-package util;
+package ch.heigvd.amt.team09.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

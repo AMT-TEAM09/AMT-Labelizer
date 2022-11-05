@@ -1,4 +1,4 @@
-package util;
+package ch.heigvd.amt.team09.util;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

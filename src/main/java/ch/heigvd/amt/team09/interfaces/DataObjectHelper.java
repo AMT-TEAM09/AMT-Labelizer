@@ -1,4 +1,4 @@
-package interfaces;
+package ch.heigvd.amt.team09.interfaces;
 
 import java.io.InputStream;
 import java.net.URL;

@@ -1,4 +1,6 @@
-import impl.aws.AwsCloudClient;
+package ch.heigvd.amt.team09;
+
+import ch.heigvd.amt.team09.impl.aws.AwsCloudClient;
 
 public class App {
     public static void main(String[] args) {
