@@ -30,6 +30,16 @@ class AwsLabelHelperTest {
         return Base64.getEncoder().encodeToString(fileBytes);
     }
 
+    private static boolean isUrlValid(String url) {
+        try {
+            var huc = (HttpURLConnection) new URL(url).openConnection();
+            var responseCode = huc.getResponseCode();
+            return responseCode == 200;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     @BeforeEach
     void setUp() {
         Dotenv dotenv = Dotenv.configure().load();
@@ -55,7 +65,7 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl);
+        var labels = labelHelper.execute(imageUrl, AwsLabelHelper.NO_OPTIONS);
 
         // then
         assertTrue(labels.length > 0);
@@ -121,7 +131,7 @@ class AwsLabelHelperTest {
         var expectedLabelName = "Phone";
 
         // when
-        var labels = labelHelper.executeFromBase64(imageString);
+        var labels = labelHelper.executeFromBase64(imageString, AwsLabelHelper.NO_OPTIONS);
 
         // then
         assertTrue(labels.length > 0);
@@ -179,16 +189,8 @@ class AwsLabelHelperTest {
         var imageString = "invalid";
 
         // then
-        assertThrows(InvalidImageFormatException.class, () -> labelHelper.executeFromBase64(imageString));
-    }
-
-    private boolean isUrlValid(String url) {
-        try {
-            var huc = (HttpURLConnection) new URL(url).openConnection();
-            var responseCode = huc.getResponseCode();
-            return responseCode == 200;
-        } catch (IOException e) {
-            return false;
-        }
+        assertThrows(InvalidImageFormatException.class, () -> {
+            labelHelper.executeFromBase64(imageString, AwsLabelHelper.NO_OPTIONS);
+        });
     }
 }

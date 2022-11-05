@@ -10,11 +10,7 @@ import java.util.OptionalInt;
 import java.util.function.Consumer;
 
 public interface LabelHelper {
-    Label[] execute(String imageUrl) throws IOException;
-
     Label[] execute(String imageUrl, Consumer<LabelOptions.Builder> options) throws IOException;
-
-    Label[] executeFromBase64(String base64);
 
     Label[] executeFromBase64(String base64, Consumer<LabelOptions.Builder> options);
 

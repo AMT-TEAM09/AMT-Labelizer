@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AwsLabelHelper implements LabelHelper {
-    private static final Consumer<LabelOptions.Builder> NO_OPTIONS = b -> {
+    public static final Consumer<LabelOptions.Builder> NO_OPTIONS = b -> {
     };
+    private static final Logger LOG = Logger.getLogger(AwsLabelHelper.class.getName());
     private final RekognitionClient client;
 
     public AwsLabelHelper(ProfileCredentialsProvider credentialsProvider, Region region) {
@@ -25,11 +28,6 @@ public class AwsLabelHelper implements LabelHelper {
                 .credentialsProvider(credentialsProvider)
                 .region(region)
                 .build();
-    }
-
-    @Override
-    public Label[] execute(String imageUrl) throws IOException {
-        return execute(imageUrl, NO_OPTIONS);
     }
 
     @Override
@@ -46,11 +44,6 @@ public class AwsLabelHelper implements LabelHelper {
                 .build();
 
         return executeRequest(image, options);
-    }
-
-    @Override
-    public Label[] executeFromBase64(String base64) {
-        return executeFromBase64(base64, NO_OPTIONS);
     }
 
     @Override
@@ -76,7 +69,13 @@ public class AwsLabelHelper implements LabelHelper {
         options.maxLabels().ifPresent(requestBuilder::maxLabels);
         options.minConfidence().ifPresent(requestBuilder::minConfidence);
 
+        LOG.info("Sending request to AWS Rekognition");
+        var start = System.currentTimeMillis();
+
         var response = client.detectLabels(requestBuilder.build());
+
+        var elapsed = System.currentTimeMillis() - start;
+        LOG.log(Level.INFO, "Request completed in {0}ms", elapsed);
 
         return responseToArray(response);
     }

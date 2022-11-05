@@ -1,7 +1,7 @@
 package interfaces;
 
 public interface CloudClient {
-    DataObjectHelper getDataObjectHelper();
+    DataObjectHelper dataObjectHelper();
 
-    LabelHelper getLabelDetector();
+    LabelHelper labelHelper();
 }

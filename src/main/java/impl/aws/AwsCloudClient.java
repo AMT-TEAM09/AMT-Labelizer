@@ -33,7 +33,7 @@ public class AwsCloudClient implements CloudClient {
     }
 
     @Override
-    public AwsDataObjectHelper getDataObjectHelper() {
+    public AwsDataObjectHelper dataObjectHelper() {
         if (dataObjectHelper == null) {
             dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
         }
@@ -42,7 +42,7 @@ public class AwsCloudClient implements CloudClient {
     }
 
     @Override
-    public AwsLabelHelper getLabelDetector() {
+    public AwsLabelHelper labelHelper() {
         if (labelDetector == null) {
             labelDetector = new AwsLabelHelper(credentialsProvider, region);
         }
