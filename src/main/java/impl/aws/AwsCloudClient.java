@@ -11,7 +11,7 @@ public class AwsCloudClient implements CloudClient {
     private final ProfileCredentialsProvider credentialsProvider;
     private final Region region;
     private AwsDataObjectHelper dataObjectHelper;
-    private AwsLabelDetector labelDetector;
+    private AwsLabelHelper labelDetector;
 
     private AwsCloudClient() {
         Dotenv dotenv = Dotenv.configure().load();
@@ -42,11 +42,11 @@ public class AwsCloudClient implements CloudClient {
     }
 
     @Override
-    public AwsLabelDetector getLabelDetector() {
+    public AwsLabelHelper getLabelDetector() {
         if (labelDetector != null) {
             return labelDetector;
         }
 
-        return labelDetector = new AwsLabelDetector(credentialsProvider, region);
+        return labelDetector = new AwsLabelHelper(credentialsProvider, region);
     }
 }
