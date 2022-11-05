@@ -34,19 +34,19 @@ public class AwsCloudClient implements CloudClient {
 
     @Override
     public AwsDataObjectHelper getDataObjectHelper() {
-        if (dataObjectHelper != null) {
-            return dataObjectHelper;
+        if (dataObjectHelper == null) {
+            dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
         }
 
-        return dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
+        return dataObjectHelper;
     }
 
     @Override
     public AwsLabelHelper getLabelDetector() {
-        if (labelDetector != null) {
-            return labelDetector;
+        if (labelDetector == null) {
+            labelDetector = new AwsLabelHelper(credentialsProvider, region);
         }
 
-        return labelDetector = new AwsLabelHelper(credentialsProvider, region);
+        return labelDetector;
     }
 }
