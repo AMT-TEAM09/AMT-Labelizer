@@ -14,10 +14,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Base64;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AwsLabelHelperTest {
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
@@ -45,6 +45,7 @@ class AwsLabelHelperTest {
         // given
         var imageUrl = new URL("https://upload.wikimedia.org/wikipedia/commons/6/6b/American_Beaver.jpg");
         var params = new int[]{};
+        var expectedLabelName = "Beaver";
 
         var huc = (HttpURLConnection) imageUrl.openConnection();
         var responseCode = huc.getResponseCode();
@@ -54,7 +55,8 @@ class AwsLabelHelperTest {
         var labels = labelHelper.execute(imageUrl.toString(), params);
 
         // then
-        assertEquals("Beaver", labels);
+        assertTrue(labels.length > 0);
+        assertTrue(Arrays.stream(labels).anyMatch(l -> l.name().equals(expectedLabelName)));
     }
 
     @Test
@@ -63,12 +65,14 @@ class AwsLabelHelperTest {
         var fileBytes = Files.readAllBytes(IMAGE_FILE);
         String imageString = Base64.getEncoder().encodeToString(fileBytes);
         var params = new int[]{};
+        var expectedLabelName = "Phone";
 
         // when
         var labels = labelHelper.executeFromBase64(imageString, params);
 
         // then
-        assertEquals("Beaver", labels);
+        assertTrue(labels.length > 0);
+        assertTrue(Arrays.stream(labels).anyMatch(l -> l.name().equals(expectedLabelName)));
     }
 
     @Test
