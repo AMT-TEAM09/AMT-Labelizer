@@ -4,7 +4,9 @@ import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
@@ -21,16 +23,20 @@ class AwsDataObjectHelperTest {
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String TEST_OBJECT_NAME = "test-object";
     private Region region;
-    private ProfileCredentialsProvider credentialsProvider;
+    private AwsCredentialsProvider credentialsProvider;
     private AwsDataObjectHelper objectHelper;
 
     @BeforeEach
     void setUp() {
         var bucketName = Configuration.get("AWS_BUCKET_NAME");
-        var profile = Configuration.get("AWS_PROFILE");
 
         region = Region.of(Configuration.get("AWS_REGION"));
-        credentialsProvider = ProfileCredentialsProvider.create(profile);
+        credentialsProvider = StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(
+                        Configuration.get("AWS_ACCESS_KEY_ID"),
+                        Configuration.get("AWS_SECRET_ACCESS_KEY")
+                )
+        );
 
         objectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
     }

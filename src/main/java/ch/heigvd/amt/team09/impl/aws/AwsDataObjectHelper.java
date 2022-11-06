@@ -1,7 +1,7 @@
 package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -19,7 +19,7 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     private final S3Client client;
     private final S3Presigner presigner;
 
-    public AwsDataObjectHelper(ProfileCredentialsProvider credentialsProvider, String bucketName, Region region) {
+    public AwsDataObjectHelper(AwsCredentialsProvider credentialsProvider, String bucketName, Region region) {
         client = S3Client.builder()
                 .credentialsProvider(credentialsProvider)
                 .region(region)
