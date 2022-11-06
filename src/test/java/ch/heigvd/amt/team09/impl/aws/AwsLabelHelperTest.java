@@ -1,6 +1,6 @@
 package ch.heigvd.amt.team09.impl.aws;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,10 +42,8 @@ class AwsLabelHelperTest {
 
     @BeforeEach
     void setUp() {
-        Dotenv dotenv = Dotenv.configure().load();
-
-        var profile = dotenv.get("AWS_PROFILE");
-        var region = Region.of(dotenv.get("AWS_REGION"));
+        var profile = Configuration.get("AWS_PROFILE");
+        var region = Region.of(Configuration.get("AWS_REGION"));
         var credentialsProvider = ProfileCredentialsProvider.create(profile);
 
         labelHelper = new AwsLabelHelper(credentialsProvider, region);

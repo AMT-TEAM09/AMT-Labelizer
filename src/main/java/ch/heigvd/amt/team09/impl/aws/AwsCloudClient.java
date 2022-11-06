@@ -2,9 +2,9 @@ package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.CloudClient;
 import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
+import ch.heigvd.amt.team09.util.Configuration;
 import ch.heigvd.amt.team09.util.FilesHelper;
 import ch.heigvd.amt.team09.util.JsonHelper;
-import io.github.cdimascio.dotenv.Dotenv;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
@@ -18,14 +18,12 @@ public class AwsCloudClient implements CloudClient {
     private final AwsLabelHelper labelDetector;
 
     private AwsCloudClient() {
-        Dotenv dotenv = Dotenv.configure().load();
+        String bucketName = Configuration.get("AWS_BUCKET_NAME");
 
-        String bucketName = dotenv.get("AWS_BUCKET_NAME");
-
-        var profile = dotenv.get("AWS_PROFILE");
+        var profile = Configuration.get("AWS_PROFILE");
         ProfileCredentialsProvider credentialsProvider = ProfileCredentialsProvider.create(profile);
 
-        Region region = Region.of(dotenv.get("AWS_REGION"));
+        Region region = Region.of(Configuration.get("AWS_REGION"));
 
         dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
         labelDetector = new AwsLabelHelper(credentialsProvider, region);
