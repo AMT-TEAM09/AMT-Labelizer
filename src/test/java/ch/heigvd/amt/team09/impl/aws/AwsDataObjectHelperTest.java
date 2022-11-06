@@ -1,6 +1,6 @@
 package ch.heigvd.amt.team09.impl.aws;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,12 +26,10 @@ class AwsDataObjectHelperTest {
 
     @BeforeEach
     void setUp() {
-        Dotenv dotenv = Dotenv.configure().load();
+        var bucketName = Configuration.get("AWS_BUCKET_NAME");
+        var profile = Configuration.get("AWS_PROFILE");
 
-        var bucketName = dotenv.get("AWS_BUCKET_NAME");
-        var profile = dotenv.get("AWS_PROFILE");
-
-        region = Region.of(dotenv.get("AWS_REGION"));
+        region = Region.of(Configuration.get("AWS_REGION"));
         credentialsProvider = ProfileCredentialsProvider.create(profile);
 
         objectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);

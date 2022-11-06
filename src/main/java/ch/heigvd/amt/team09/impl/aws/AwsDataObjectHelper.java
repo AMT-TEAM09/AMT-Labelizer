@@ -32,7 +32,7 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     }
 
     @Override
-    public void create(String objectName) {
+    public void create() {
         createBucket();
     }
 

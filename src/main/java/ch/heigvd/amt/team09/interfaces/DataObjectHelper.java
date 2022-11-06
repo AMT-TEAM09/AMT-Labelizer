@@ -5,7 +5,7 @@ import java.net.URL;
 import java.nio.file.Path;
 
 public interface DataObjectHelper {
-    void create(String objectName);
+    void create();
 
     void create(String objectName, Path filePath);
 
