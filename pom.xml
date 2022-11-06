@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>19</maven.compiler.source>
         <maven.compiler.target>19</maven.compiler.target>
-        <project.build.jarName>App</project.build.jarName>
+        <project.build.jarName>app</project.build.jarName>
     </properties>
 
     <build>
