@@ -5,7 +5,8 @@ import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
 import ch.heigvd.amt.team09.util.Configuration;
 import ch.heigvd.amt.team09.util.FilesHelper;
 import ch.heigvd.amt.team09.util.JsonHelper;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
@@ -18,12 +19,14 @@ public class AwsCloudClient implements CloudClient {
     private final AwsLabelHelper labelDetector;
 
     private AwsCloudClient() {
-        String bucketName = Configuration.get("AWS_BUCKET_NAME");
-
-        var profile = Configuration.get("AWS_PROFILE");
-        ProfileCredentialsProvider credentialsProvider = ProfileCredentialsProvider.create(profile);
-
-        Region region = Region.of(Configuration.get("AWS_REGION"));
+        var bucketName = Configuration.get("AWS_BUCKET_NAME");
+        var credentialsProvider = StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(
+                        Configuration.get("AWS_ACCESS_KEY_ID"),
+                        Configuration.get("AWS_SECRET_ACCESS_KEY")
+                )
+        );
+        var region = Region.of(Configuration.get("AWS_REGION"));
 
         dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
         labelDetector = new AwsLabelHelper(credentialsProvider, region);

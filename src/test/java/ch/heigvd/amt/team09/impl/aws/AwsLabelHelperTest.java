@@ -4,7 +4,8 @@ import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.model.InvalidImageFormatException;
 
@@ -42,9 +43,13 @@ class AwsLabelHelperTest {
 
     @BeforeEach
     void setUp() {
-        var profile = Configuration.get("AWS_PROFILE");
         var region = Region.of(Configuration.get("AWS_REGION"));
-        var credentialsProvider = ProfileCredentialsProvider.create(profile);
+        var credentialsProvider = StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(
+                        Configuration.get("AWS_ACCESS_KEY_ID"),
+                        Configuration.get("AWS_SECRET_ACCESS_KEY")
+                )
+        );
 
         labelHelper = new AwsLabelHelper(credentialsProvider, region);
     }
