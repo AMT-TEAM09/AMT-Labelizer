@@ -43,6 +43,11 @@ public class App {
             jcommander.usage();
             return;
         }
+        
+        if (app.help) {
+            jcommander.usage();
+            return;
+        }
 
         var json = app.analyze();
 
