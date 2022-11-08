@@ -6,28 +6,9 @@
 
 [Java 17](https://adoptium.net/temurin/releases/)
 
-[Maven 3.8](https://maven.apache.org/download.cgi)
+[Maven 3.8](https://maven.apache.org/download.cgi) avec la variable d'environnement `JAVA_HOME` pointant sur le jdk 17.
 
-## Installation
-
-Pour installer toutes les dépendances, faire la commande suivante :
-
-```
-mvn install
-```
-
-Il faut ensuite créer un fichier `.env` à la racine du projet, contenant les informations suivantes :
-
-```
-AWS_ACCESS_KEY_ID= ...
-AWS_SECRET_ACCESS_KEY= ...
-AWS_BUCKET_NAME= ...
-AWS_REGION= ...
-```
-
-## Paramétrage
-
-Les droits nécessaires minimums du profil sont les suivants :
+Un utilisateur [AWS IAM](https://aws.amazon.com/iam/) avec les droits suivants :
 
 ```
 {
@@ -51,51 +32,80 @@ Les droits nécessaires minimums du profil sont les suivants :
         }
     ]
 }
+```
+
+## :wrench: Installation
+
+Pour installer le projet, il suffit de cloner le projet et de lancer la commande suivante :
 
 ```
+mvn install
+```
+
+Un fichier `.env` doit ensuite être créé à la racine du projet avec les informations suivantes :
+
+```
+AWS_ACCESS_KEY_ID= ...
+AWS_SECRET_ACCESS_KEY= ...
+AWS_BUCKET_NAME= ...
+AWS_REGION= ...
+```
+
+La region doit être définie selon la colonne `Region` du tableau présenté dans  
+[la documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html#Concepts.RegionsAndAvailabilityZones.Regions).
 
 ## Tests
 
-Pour compiler et lancer les tests
+Pour lancer les tests, il suffit de lancer la commande suivante :
 
 ```
 mvn test
 ```
 
-Pour lancer une classe de tests spécifique
+Pour lancer une classe de tests spécifique:
 
 ```
 mvn -Dtest=NomDeLaClasseDeTest test
 ```
 
-Pour lancer un test spécifique
+Pour lancer un test spécifique :
 
 ```
 mvn -Dtest=NomDeLaClasseDeTest#nomDuTest test
 ```
 
-[Plus d'infos](https://maven.apache.org/surefire/maven-surefire-plugin/examples/single-test.html)
+Plus d'infos, consultez la [documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/single-test.html)
 
-## Lancer l'application
-Utilisez les commandes suivantes pour créer l'exécutable `.jar` et le lancer
+## :rocket: Lancement
+
+Utilisez les commandes suivantes pour créer le `.jar` et le lancer :
+
 ```
 mvn package
 
-java -jar target/*.jar
+cd target
+java -jar app.jar
 ```
 
-> :warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ᵉ commande.**
+> :warning: **Il est nécessaire que le fichier `.env` se situe dans le même dossier.**
 
 ## Structure du projet
 
 ```
 Labelizer
-    ├─── .idea
-    ├─── src
-    │     ├─── main
-    │     │     └─── java
-    │     └─── test
-    │           ├─── java
-    │           └─── resources
-    └─── target
+│   .env                    # Fichier de configuration
+│   .gitignore
+│   pom.xml
+│   README.md
+│
+├───.github
+│   └───workflows
+│           pipeline.yaml   # Défini une action GitHub pour lancer les tests
+└───src
+    ├───main
+    │   └───java            # Contient les classes du projet
+    │
+    └───test
+        ├───java            # Contient les classes de tests
+        └───resources
 ```
