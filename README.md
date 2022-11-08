@@ -4,8 +4,9 @@
 
 ## Pré-requis
 
-La version 17 de Java est requise pour lancer le projet. Il faut aussi que la variable d'environnement JAVA_HOME
-soit définie.
+[Java 17](https://adoptium.net/temurin/releases/)
+
+[Maven 3.8](https://maven.apache.org/download.cgi)
 
 ## Installation
 
@@ -73,7 +74,17 @@ mvn -Dtest=NomDeLaClasseDeTest#nomDuTest test
 
 [Plus d'infos](https://maven.apache.org/surefire/maven-surefire-plugin/examples/single-test.html)
 
-## Structure
+## Lancer l'application
+Utilisez les commandes suivantes pour créer l'exécutable `.jar` et le lancer
+```
+mvn package
+
+java -jar target/*.jar
+```
+
+Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.
+
+## Structure du projet
 
 ```
 AMT-TestAws
