@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.heigvd</groupId>
-    <artifactId>AMT-TestAws</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>Labelizer</artifactId>
+    <version>1.0</version>
 
-    <name>AMT-TestAws</name>
+    <name>Labelizer</name>
 
     <properties>
         <java.version>17</java.version>
