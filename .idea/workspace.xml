@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a58d9305-6881-48cf-9d70-3642abd13724" name="Changes" comment="Désactivation du jar généré par défaut par maven-jar-plugin">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/pipeline.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="a58d9305-6881-48cf-9d70-3642abd13724" name="Changes" comment="Mise à jour de la version du SDK">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,8 +131,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.All in AMT-TestAws" />
         <item itemvalue="Application.App" />
+        <item itemvalue="JUnit.All in AMT-TestAws" />
         <item itemvalue="JUnit.All in AMT-TestAws" />
         <item itemvalue="Application.App" />
         <item itemvalue="Application.App" />
@@ -476,7 +473,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667825961174</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="Mise à jour de la version du SDK">
+      <created>1667910747043</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1667910747043</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -498,7 +502,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Renommage LabelDetector -&gt; LabelHelper" />
     <MESSAGE value="Implémentation basique de AwsLabelHelper" />
     <MESSAGE value="Refactor des getters pour être plus lisible" />
     <MESSAGE value="Création d'un record Label" />
@@ -523,7 +526,8 @@
     <MESSAGE value="Ajout de maven-enforcer-plugin pour garantir l'utilisation du jdk 17 ou plus" />
     <MESSAGE value="Ajout du flag --help" />
     <MESSAGE value="Désactivation du jar généré par défaut par maven-jar-plugin" />
-    <option name="LAST_COMMIT_MESSAGE" value="Désactivation du jar généré par défaut par maven-jar-plugin" />
+    <MESSAGE value="Mise à jour de la version du SDK" />
+    <option name="LAST_COMMIT_MESSAGE" value="Mise à jour de la version du SDK" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
