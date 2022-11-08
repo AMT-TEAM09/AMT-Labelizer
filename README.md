@@ -130,5 +130,7 @@ java -jar app.jar -h
 Exemple de lancement pour tester facilement :
 
 ```
-java -jar app.jar -m 2 https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/1200px-Cat_November_2010-1a.jpg
+java -jar app.jar -m 2 https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/1200px-Cat_November_2010-1a.jpg -r cat
 ```
+
+Grâce au paramètre `-r`, les résultats seront disponibles sur le bucket S3 dans l'objet `cat`.
