@@ -2,7 +2,7 @@
 
 ### Auteurs : Stéphane Marengo & Géraud Silvestri
 
-## Pré-requis
+## :warning: Pré-requis
 
 [Java 17](https://adoptium.net/temurin/releases/)
 
@@ -84,7 +84,7 @@ mvn package
 java -jar target/*.jar
 ```
 
-:warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.
+:warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.**
 
 ## Structure du projet
 
