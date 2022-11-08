@@ -36,7 +36,7 @@ Un utilisateur [AWS IAM](https://aws.amazon.com/iam/) avec les droits suivants :
 
 ## :wrench: Installation
 
-Pour installer le projet, il suffit de cloner le projet et de lancer la commande suivante :
+Pour installer le projet, il suffit de cloner le projet et de lancer la commande suivante depuis sa racine :
 
 ```
 mvn install
@@ -101,6 +101,9 @@ Labelizer
 ├───.github
 │   └───workflows
 │           pipeline.yaml   # Défini une action GitHub pour lancer les tests
+│
+├───target                  # Contient le projet compilé, notamment le .jar
+│
 └───src
     ├───main
     │   └───java            # Contient les classes du projet
@@ -108,4 +111,24 @@ Labelizer
     └───test
         ├───java            # Contient les classes de tests
         └───resources
+```
+
+## :roller_coaster: Lancement depuis la machine EC2
+
+Après s'être connecté à l'instance EC2, il faut se rendre dans le dossier du projet :
+
+```
+cd Labelizer
+```
+
+et lancer la commande suivante pour afficher l'aide :
+
+```
+java -jar app.jar -h
+```
+
+Exemple de lancement pour tester facilement :
+
+```
+java -jar app.jar -m 2 https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/1200px-Cat_November_2010-1a.jpg
 ```
