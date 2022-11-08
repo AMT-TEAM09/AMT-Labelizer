@@ -29,7 +29,7 @@ public class App {
             "(url))", order = -2)
     private Integer mode;
 
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) {
         var app = new App();
         var jcommander = JCommander.newBuilder()
                 .addObject(app)
@@ -49,12 +49,10 @@ public class App {
             return;
         }
 
-        var json = app.analyze();
-
-        System.out.println(toPrettyJson(json));
+        System.out.println(app.analyze());
     }
 
-    private static String toPrettyJson(String json) throws JsonProcessingException {
+    private String toPrettyJson(String json) throws JsonProcessingException {
         var mapper = new ObjectMapper();
         var object = mapper.readValue(json, Object.class);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
@@ -63,9 +61,9 @@ public class App {
     public String analyze() {
         try {
             return switch (mode) {
-                case 0 -> client.analyzeFromBase64(content, getOptions(), remoteFileName);
-                case 1 -> client.analyzeFromObject(content, getOptions(), remoteFileName);
-                case 2 -> client.analyzeFromUrl(content, getOptions(), remoteFileName);
+                case 0 -> toPrettyJson(client.analyzeFromBase64(content, getOptions(), remoteFileName));
+                case 1 -> toPrettyJson(client.analyzeFromObject(content, getOptions(), remoteFileName));
+                case 2 -> toPrettyJson(client.analyzeFromUrl(content, getOptions(), remoteFileName));
                 default -> "Unknown mode";
             };
         } catch (IOException e) {
