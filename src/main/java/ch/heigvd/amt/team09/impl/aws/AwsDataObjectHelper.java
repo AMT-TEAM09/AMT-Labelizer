@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 
 public class AwsDataObjectHelper implements DataObjectHelper {
+    private static final int URL_EXPIRATION_TIME = 2; // in minutes
     private final String bucketName;
     private final S3Client client;
     private final S3Presigner presigner;
@@ -85,7 +86,7 @@ public class AwsDataObjectHelper implements DataObjectHelper {
             return null;
 
         var presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(60))
+                .signatureDuration(Duration.ofMinutes(URL_EXPIRATION_TIME))
                 .getObjectRequest(b -> {
                     b.bucket(bucketName);
                     b.key(objectName);
