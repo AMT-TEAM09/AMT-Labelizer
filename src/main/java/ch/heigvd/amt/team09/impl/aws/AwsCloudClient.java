@@ -47,7 +47,7 @@ public class AwsCloudClient implements CloudClient {
         try {
             labels = labelDetector.executeFromBase64(base64, options);
         } catch (IllegalArgumentException e) {
-            return "{\"error\": \"Provided base64 is not valid.\"}";
+            return getError("Provided base64 is not valid.");
         }
 
         var json = JsonHelper.toJson(labels);
@@ -86,7 +86,7 @@ public class AwsCloudClient implements CloudClient {
     @Override
     public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException {
         if (!dataObjectHelper.exists(objectName)) {
-            return String.format("{\"error\": \"Object %s does not exist\"}", objectName);
+            return getError(String.format("Object %s does not exist.", objectName));
         }
 
         var url = dataObjectHelper.publish(objectName);
@@ -109,5 +109,9 @@ public class AwsCloudClient implements CloudClient {
         var imagePath = FilesHelper.storeBase64ToTempFile(remoteFileName, base64);
         dataObjectHelper.create(remoteFileName, imagePath);
         Files.delete(imagePath);
+    }
+
+    private String getError(String message) {
+        return String.format("{\"error\": \"%s\"}", message);
     }
 }
