@@ -1,4 +1,4 @@
-# AMT-TestAws
+# AMT-Labelizer
 
 ### Auteurs : Stéphane Marengo & Géraud Silvestri
 
