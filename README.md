@@ -4,8 +4,8 @@
 
 ## Pré-requis
 
-La version 19 de Java est requise pour lancer le projet. Il faut aussi que la variable d'environnement JAVA_HOME soit
-définie.
+La version 17 de Java est requise pour lancer le projet. Il faut aussi que la variable d'environnement JAVA_HOME
+soit définie.
 
 ## Installation
 
@@ -84,6 +84,7 @@ AMT-TestAws
     │     │           ├─── impl
     │     │           │     └───aws
     │     │           ├─── interfaces
+    │     │           ├─── models
     │     │           └─── util
     │     └─── test
     │           ├─── java
@@ -95,6 +96,9 @@ AMT-TestAws
            │      ├─── impl
            │      │     └─── aws
            │      └─── interfaces
-           └─── generated-sources
-                  └─── annotations
+           ├─── generated-sources
+           │      └─── annotations
+           ├─── generated-test-sources
+           │      └─── test-annotations
+           └─── test-classes
 ```
