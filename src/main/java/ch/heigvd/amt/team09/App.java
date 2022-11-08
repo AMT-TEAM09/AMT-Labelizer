@@ -20,7 +20,7 @@ public class App {
     private Integer maxLabels;
     @Parameter(names = {"--confidence", "-c"}, description = "Minimum confidence for a label to be returned")
     private Float minConfidence;
-    @Parameter(names = {"--remote", "-r"}, description = "Remote file name")
+    @Parameter(names = {"--remote", "-r"}, description = "Remote file name. If set, results will be uploaded to S3")
     private String remoteFileName;
     @Parameter(required = true, description = "<content>")
     private String content;
