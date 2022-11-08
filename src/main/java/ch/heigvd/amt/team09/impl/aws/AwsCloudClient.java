@@ -2,6 +2,7 @@ package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.CloudClient;
 import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
+import ch.heigvd.amt.team09.models.Label;
 import ch.heigvd.amt.team09.util.Configuration;
 import ch.heigvd.amt.team09.util.FilesHelper;
 import ch.heigvd.amt.team09.util.JsonHelper;
@@ -42,7 +43,12 @@ public class AwsCloudClient implements CloudClient {
 
     @Override
     public String analyzeFromBase64(String base64, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException {
-        var labels = labelDetector.executeFromBase64(base64, options);
+        Label[] labels;
+        try {
+            labels = labelDetector.executeFromBase64(base64, options);
+        } catch (IllegalArgumentException e) {
+            return "{\"error\": \"Provided base64 is not valid.\"}";
+        }
 
         var json = JsonHelper.toJson(labels);
 
