@@ -5,6 +5,12 @@
 
 target/
 
+.idea/
+
+**.iml
+
+dependency-reduced-pom.xml
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
