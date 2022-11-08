@@ -2,7 +2,7 @@
 
 ### Auteurs : Stéphane Marengo & Géraud Silvestri
 
-## Pré-requis
+## :warning: Pré-requis
 
 [Java 17](https://adoptium.net/temurin/releases/)
 
@@ -19,8 +19,10 @@ mvn install
 Il faut ensuite créer un fichier `.env` à la racine du projet, contenant les informations suivantes :
 
 ```
-AWS_PROFILE=...
-AWS_BUCKET_NAME=...
+AWS_ACCESS_KEY_ID= ...
+AWS_SECRET_ACCESS_KEY= ...
+AWS_BUCKET_NAME= ...
+AWS_REGION= ...
 ```
 
 ## Paramétrage
@@ -82,7 +84,7 @@ mvn package
 java -jar target/*.jar
 ```
 
-Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.
+:warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.**
 
 ## Structure du projet
 
@@ -92,24 +94,8 @@ AMT-TestAws
     ├─── src
     │     ├─── main
     │     │     └─── java
-    │     │           ├─── impl
-    │     │           │     └───aws
-    │     │           ├─── interfaces
-    │     │           ├─── models
-    │     │           └─── util
     │     └─── test
     │           ├─── java
-    │           │     └─── impl
-    │           │           └─── aws
     │           └─── resources
     └─── target
-           ├─── classes
-           │      ├─── impl
-           │      │     └─── aws
-           │      └─── interfaces
-           ├─── generated-sources
-           │      └─── annotations
-           ├─── generated-test-sources
-           │      └─── test-annotations
-           └─── test-classes
 ```
