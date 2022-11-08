@@ -96,6 +96,7 @@ public class AwsCloudClient implements CloudClient {
     private void uploadJson(String remoteFileName, String json) throws IOException {
         var jsonPath = FilesHelper.storeToFile(remoteFileName, json);
         dataObjectHelper.create(remoteFileName + ".json", jsonPath);
+        Files.delete(jsonPath);
     }
 
     private void uploadBase64(String remoteFileName, String base64) throws IOException {
