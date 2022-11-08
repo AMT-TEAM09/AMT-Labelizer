@@ -84,7 +84,7 @@ mvn package
 java -jar target/*.jar
 ```
 
-:warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.**
+> :warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.**
 
 ## Structure du projet
 
