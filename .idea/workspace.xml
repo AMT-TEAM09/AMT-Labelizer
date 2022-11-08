@@ -4,14 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a58d9305-6881-48cf-9d70-3642abd13724" name="Changes" comment="Gestion des credentials via Dotenv">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+    <list default="true" id="a58d9305-6881-48cf-9d70-3642abd13724" name="Changes" comment="Désactivation du jar généré par défaut par maven-jar-plugin">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/pipeline.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/impl/aws/AwsDataObjectHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/impl/aws/AwsDataObjectHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interfaces/DataObjectHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interfaces/DataObjectHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/impl/aws/AwsDataObjectHelperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/impl/aws/AwsDataObjectHelperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +31,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="feat/simple-cli" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -54,25 +51,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit3": "junit.framework.TestCase",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "actions.on.save"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit3&quot;: &quot;junit.framework.TestCase&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Projects/testMaven&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editing.templates&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -82,14 +81,27 @@
       <recent name="C:\HEIG\S5\AMT\Labos\AMT-TestAws\src\test\resources" />
     </key>
     <key name="CreateTestDialog.RecentsKey">
+      <recent name="models" />
       <recent name="impl.aws" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.AwsDataObjectHelperTest">
+  <component name="RunManager" selected="Application.App">
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="App" />
+      <option name="MAIN_CLASS_NAME" value="ch.heigvd.amt.team09.App" />
       <module name="AMT-TestAws" />
+      <option name="PROGRAM_PARAMETERS" value="-m 2 https://picsum.photos/id/237/536/354" />
       <shortenClasspath name="ARGS_FILE" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ch.heigvd.amt.team09.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+        <option name="credential" />
+        <option name="region" />
+        <option name="useCurrentConnection" value="false" />
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -100,74 +112,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="AwsDataObjectHelperTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="All in AMT-TestAws" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="AMT-TestAws" />
       <shortenClasspath name="ARGS_FILE" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="impl.aws.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="impl.aws" />
-      <option name="MAIN_CLASS_NAME" value="impl.aws.AwsDataObjectHelperTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="AwsDataObjectHelperTest.itShouldCreateAnObject" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="AMT-TestAws" />
-      <shortenClasspath name="ARGS_FILE" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="impl.aws.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
-        <option name="credential" />
-        <option name="region" />
-        <option name="useCurrentConnection" value="false" />
-      </extension>
-      <option name="PACKAGE_NAME" value="impl.aws" />
-      <option name="MAIN_CLASS_NAME" value="impl.aws.AwsDataObjectHelperTest" />
-      <option name="METHOD_NAME" value="itShouldCreateAnObject" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="AwsDataObjectHelperTest.itShouldDeleteAnObject" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="AMT-TestAws" />
-      <shortenClasspath name="ARGS_FILE" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="impl.aws.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="impl.aws" />
-      <option name="MAIN_CLASS_NAME" value="impl.aws.AwsDataObjectHelperTest" />
-      <option name="METHOD_NAME" value="itShouldDeleteAnObject" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="AwsDataObjectHelperTest.itShouldRetrieveAnObject" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="AMT-TestAws" />
-      <shortenClasspath name="ARGS_FILE" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="impl.aws.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="impl.aws" />
-      <option name="MAIN_CLASS_NAME" value="impl.aws.AwsDataObjectHelperTest" />
-      <option name="METHOD_NAME" value="itShouldRetrieveAnObject" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -179,12 +128,16 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.App" />
+      <item itemvalue="JUnit.All in AMT-TestAws" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.AwsDataObjectHelperTest" />
-        <item itemvalue="JUnit.AwsDataObjectHelperTest.itShouldDeleteAnObject" />
-        <item itemvalue="JUnit.AwsDataObjectHelperTest.itShouldRetrieveAnObject" />
-        <item itemvalue="JUnit.AwsDataObjectHelperTest.itShouldCreateAnObject" />
+        <item itemvalue="JUnit.All in AMT-TestAws" />
+        <item itemvalue="Application.App" />
+        <item itemvalue="JUnit.All in AMT-TestAws" />
+        <item itemvalue="Application.App" />
         <item itemvalue="Application.App" />
       </list>
     </recent_temporary>
@@ -204,7 +157,16 @@
       <workItem from="1667304997944" duration="10572000" />
       <workItem from="1667317353846" duration="216000" />
       <workItem from="1667317598469" duration="162000" />
-      <workItem from="1667317774838" duration="797000" />
+      <workItem from="1667317774838" duration="5145000" />
+      <workItem from="1667423056281" duration="4367000" />
+      <workItem from="1667467330198" duration="3580000" />
+      <workItem from="1667470937205" duration="3164000" />
+      <workItem from="1667479229819" duration="7000" />
+      <workItem from="1667646069384" duration="31074000" />
+      <workItem from="1667724005632" duration="15540000" />
+      <workItem from="1667813724129" duration="430000" />
+      <workItem from="1667825857458" duration="713000" />
+      <workItem from="1667909396765" duration="137000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1666096372206</created>
@@ -283,7 +245,238 @@
       <option name="project" value="LOCAL" />
       <updated>1667314837773</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Mise à jour du pom">
+      <created>1667318840989</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1667318840989</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Mise à jour du gitignore pour ignorer les .env">
+      <created>1667467376073</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1667467376073</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Réécriture des tests en given/when/then&#10;Ajout de publish dans l'interface">
+      <created>1667467478193</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1667467478193</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Intégration de Dotenv dans le AwsCloudClient">
+      <created>1667467491186</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1667467491186</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Ajout des implémentations manquantes dans AwsDataObjectHelper">
+      <created>1667467517712</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1667467517712</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Ajout de méthodes create/exists/delete pour le bucket">
+      <created>1667472933359</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1667472933359</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Fix des tests de AwsDataObjectHelper">
+      <created>1667476453242</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1667476453242</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Début d'écriture des tests de AwsLabelHelper">
+      <created>1667647216227</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1667647216227</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Renommage LabelDetector -&gt; LabelHelper">
+      <created>1667647236990</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1667647236990</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Implémentation basique de AwsLabelHelper">
+      <created>1667647254890</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1667647254890</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Refactor des getters pour être plus lisible">
+      <created>1667647326180</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1667647326180</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Création d'un record Label">
+      <created>1667650928280</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1667650928280</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Ajout de Jackson comme dépendance">
+      <created>1667650940558</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1667650940558</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Refactor du LabelHelper pour retourner Label[]">
+      <created>1667651013402</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1667651013402</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Cas nominaux des tests de Rekognition">
+      <created>1667651557736</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1667651557736</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Refactor AwsLabelHelper pour simplifier l'implémentation des options">
+      <created>1667651752598</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1667651752598</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Ecriture des tests du LabelHelper avec options">
+      <created>1667665137253</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1667665137253</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Implémentation des options">
+      <created>1667665149119</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1667665149119</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Suppression des méthodes sans options">
+      <created>1667680572094</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1667680572094</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Suppression de la méthode toJson de Label">
+      <created>1667687874891</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1667687874891</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Création de 2 classes utilitaires FilesHelper et JsonHelper">
+      <created>1667687930512</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1667687930512</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Modification de l'interface CloudClient et implémentation">
+      <created>1667688074945</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1667688074945</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Création d'un package racine ch.heigvd.amt.team09">
+      <created>1667688281451</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1667688281451</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Implémentation d'un cli basique avec JCommander">
+      <created>1667746277743</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1667746277743</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Mise en place du packaging avec maven-assembly-plugin">
+      <created>1667746302194</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1667746302194</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Création d'une classe Configuration pour encapsuler Dotenv">
+      <created>1667757853491</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1667757853491</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Suppression du paramètre dans la méthode create">
+      <created>1667758226428</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1667758226428</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Ajout uniquement de rekognition et s3 dans le pom">
+      <created>1667758979965</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1667758979965</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Renommage du jar de sortie">
+      <created>1667759077174</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1667759077174</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Refactor des credentials pour ne pas utiliser de profile">
+      <created>1667760476270</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1667760476270</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Ajout de maven-enforcer-plugin pour garantir l'utilisation du jdk 17 ou plus">
+      <created>1667814118035</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1667814118035</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Ajout du flag --help">
+      <created>1667825923363</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1667825923363</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Désactivation du jar généré par défaut par maven-jar-plugin">
+      <created>1667825961174</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1667825961174</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -305,18 +498,43 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Initial commit" />
-    <MESSAGE value="Mise à jour du gitignore" />
-    <MESSAGE value="Mise à jour de divers fichiers" />
-    <MESSAGE value="Création de l'architecture" />
-    <MESSAGE value="Ajout de JUnit" />
-    <MESSAGE value="Mise à jour des interfaces" />
-    <MESSAGE value="Implémentation de AwsCloudClient" />
-    <MESSAGE value="Implémentation de AwsDataObjectHelper" />
-    <MESSAGE value="Implémentation partielle de AwsLabelDetector" />
-    <MESSAGE value="Début des tests" />
-    <MESSAGE value="Gestion des credentials via Dotenv" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gestion des credentials via Dotenv" />
+    <MESSAGE value="Renommage LabelDetector -&gt; LabelHelper" />
+    <MESSAGE value="Implémentation basique de AwsLabelHelper" />
+    <MESSAGE value="Refactor des getters pour être plus lisible" />
+    <MESSAGE value="Création d'un record Label" />
+    <MESSAGE value="Ajout de Jackson comme dépendance" />
+    <MESSAGE value="Refactor du LabelHelper pour retourner Label[]" />
+    <MESSAGE value="Cas nominaux des tests de Rekognition" />
+    <MESSAGE value="Refactor AwsLabelHelper pour simplifier l'implémentation des options" />
+    <MESSAGE value="Ecriture des tests du LabelHelper avec options" />
+    <MESSAGE value="Implémentation des options" />
+    <MESSAGE value="Suppression des méthodes sans options" />
+    <MESSAGE value="Suppression de la méthode toJson de Label" />
+    <MESSAGE value="Création de 2 classes utilitaires FilesHelper et JsonHelper" />
+    <MESSAGE value="Modification de l'interface CloudClient et implémentation" />
+    <MESSAGE value="Création d'un package racine ch.heigvd.amt.team09" />
+    <MESSAGE value="Implémentation d'un cli basique avec JCommander" />
+    <MESSAGE value="Mise en place du packaging avec maven-assembly-plugin" />
+    <MESSAGE value="Création d'une classe Configuration pour encapsuler Dotenv" />
+    <MESSAGE value="Suppression du paramètre dans la méthode create" />
+    <MESSAGE value="Ajout uniquement de rekognition et s3 dans le pom" />
+    <MESSAGE value="Renommage du jar de sortie" />
+    <MESSAGE value="Refactor des credentials pour ne pas utiliser de profile" />
+    <MESSAGE value="Ajout de maven-enforcer-plugin pour garantir l'utilisation du jdk 17 ou plus" />
+    <MESSAGE value="Ajout du flag --help" />
+    <MESSAGE value="Désactivation du jar généré par défaut par maven-jar-plugin" />
+    <option name="LAST_COMMIT_MESSAGE" value="Désactivation du jar généré par défaut par maven-jar-plugin" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/ch/heigvd/amt/team09/impl/aws/AwsDataObjectHelperTest.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
