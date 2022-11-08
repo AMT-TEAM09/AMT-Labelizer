@@ -1,4 +1,4 @@
-# AMT-TestAws
+# Labelizer
 
 ### Auteurs : Stéphane Marengo & Géraud Silvestri
 
@@ -84,34 +84,18 @@ mvn package
 java -jar target/*.jar
 ```
 
-:warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ème commande.**
+> :warning: **Il est nécessaire que le fichier `.env` soit au même niveau que l'appel de la 2ᵉ commande.**
 
 ## Structure du projet
 
 ```
-AMT-TestAws
+Labelizer
     ├─── .idea
     ├─── src
     │     ├─── main
     │     │     └─── java
-    │     │           ├─── impl
-    │     │           │     └───aws
-    │     │           ├─── interfaces
-    │     │           ├─── models
-    │     │           └─── util
     │     └─── test
     │           ├─── java
-    │           │     └─── impl
-    │           │           └─── aws
     │           └─── resources
     └─── target
-           ├─── classes
-           │      ├─── impl
-           │      │     └─── aws
-           │      └─── interfaces
-           ├─── generated-sources
-           │      └─── annotations
-           ├─── generated-test-sources
-           │      └─── test-annotations
-           └─── test-classes
 ```
