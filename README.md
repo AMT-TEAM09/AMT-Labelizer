@@ -36,6 +36,8 @@ Un utilisateur [AWS IAM](https://aws.amazon.com/iam/) avec les droits suivants :
 
 ## :wrench: Installation
 
+> TODO on demandait la commande pour récupérer les dépendances
+
 Pour installer le projet, il suffit de cloner le projet et de lancer la commande suivante depuis sa racine :
 
 ```
