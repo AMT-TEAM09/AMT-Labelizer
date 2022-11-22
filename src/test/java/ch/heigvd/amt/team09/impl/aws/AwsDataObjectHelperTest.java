@@ -1,5 +1,6 @@
 package ch.heigvd.amt.team09.impl.aws;
 
+import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
 import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,10 +12,14 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,6 +66,15 @@ class AwsDataObjectHelperTest {
 
         // then
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
+    }
+
+    @Test
+    void create_fileNameDoesNotExist_success() {
+        // given
+        assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
+
+        // then
+        assertThrows(UncheckedIOException.class, () -> objectHelper.create(TEST_OBJECT_NAME, Path.of(IMAGE_FILE + "1")));
     }
 
     //TODO REVIEW Try to avoid as much as possible exception in test case
@@ -155,8 +169,7 @@ class AwsDataObjectHelperTest {
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
-        objectHelper.publish(TEST_OBJECT_NAME);
-        var url = objectHelper.publish(TEST_OBJECT_NAME);
+        var url = assertDoesNotThrow(() -> (objectHelper.publish(TEST_OBJECT_NAME)));
 
         // then
         var huc = (HttpURLConnection) url.openConnection();
@@ -166,15 +179,12 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void publish_objectNotExists_success() {
+    void publish_objectNotExists_success(){
         // given
         assertTrue(objectHelper.exists());
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME + "1"));
 
-        // when
-        var url = objectHelper.publish(TEST_OBJECT_NAME);
-
         // then
-        assertNull(url);
+        assertThrows(DataObjectHelper.NoSuchObjectException.class, () -> objectHelper.publish(TEST_OBJECT_NAME));
     }
 }

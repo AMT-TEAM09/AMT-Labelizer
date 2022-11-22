@@ -1,6 +1,7 @@
 package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.CloudClient;
+import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
 import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
 import ch.heigvd.amt.team09.models.Label;
 import ch.heigvd.amt.team09.util.Configuration;
@@ -84,7 +85,7 @@ public class AwsCloudClient implements CloudClient {
     }
 
     @Override
-    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException {
+    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException, DataObjectHelper.NoSuchObjectException {
         if (!dataObjectHelper.exists(objectName)) {
             return getError(String.format("Object %s does not exist.", objectName));
         }
@@ -95,7 +96,7 @@ public class AwsCloudClient implements CloudClient {
     }
 
     @Override
-    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options) throws IOException {
+    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options) throws IOException, DataObjectHelper.NoSuchObjectException {
         return analyzeFromObject(objectName, options, null);
     }
 

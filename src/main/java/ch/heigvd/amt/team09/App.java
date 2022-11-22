@@ -2,6 +2,7 @@ package ch.heigvd.amt.team09;
 
 import ch.heigvd.amt.team09.impl.aws.AwsCloudClient;
 import ch.heigvd.amt.team09.interfaces.CloudClient;
+import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
 import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -29,7 +30,7 @@ public class App {
             "(url))", order = -2)
     private Integer mode;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DataObjectHelper.NoSuchObjectException {
         var app = new App();
         var jcommander = JCommander.newBuilder()
                 .addObject(app)
@@ -58,7 +59,7 @@ public class App {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
     }
 
-    public String analyze() {
+    public String analyze() throws DataObjectHelper.NoSuchObjectException {
         try {
             return switch (mode) {
                 case 0 -> toPrettyJson(client.analyzeFromBase64(content, getOptions(), remoteFileName));

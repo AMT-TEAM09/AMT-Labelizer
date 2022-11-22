@@ -17,7 +17,14 @@ public interface DataObjectHelper {
 
     void delete(String objectName);
 
-    URL publish(String objectName);
+    URL publish(String objectName) throws NoSuchObjectException;
 
     InputStream get(String objectName);
+
+    class NoSuchObjectException extends Exception {
+        public NoSuchObjectException(String message) {
+            super(message);
+        }
+    }
 }
+

@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Duration;
 
@@ -81,9 +82,9 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     }
 
     @Override
-    public URL publish(String objectName) {
+    public URL publish(String objectName) throws NoSuchObjectException {
         if (!objectExists(objectName))
-            return null;
+            throw new NoSuchObjectException("Object does not exist");
 
         var presignRequest = GetObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(URL_EXPIRATION_TIME))

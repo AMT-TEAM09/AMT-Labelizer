@@ -14,7 +14,7 @@ public interface CloudClient {
 
     String analyzeFromUrl(String url, Consumer<LabelOptions.Builder> options) throws IOException;
 
-    String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException;
+    String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException, DataObjectHelper.NoSuchObjectException;
 
-    String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options) throws IOException;
+    String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options) throws IOException, DataObjectHelper.NoSuchObjectException;
 }
