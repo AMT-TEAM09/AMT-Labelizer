@@ -34,9 +34,14 @@ Un utilisateur [AWS IAM](https://aws.amazon.com/iam/) avec les droits suivants :
 }
 ```
 
-## :wrench: Installation
+## Récupération les dépendances
 
-> TODO on demandait la commande pour récupérer les dépendances
+Pour récupérer la liste des dépendances, il faut lancer la commande suivante à la racine du projet :
+```
+mvn dependency:resolve
+```
+
+## :wrench: Installation
 
 Pour installer le projet, il suffit de cloner le projet et de lancer la commande suivante depuis sa racine :
 
