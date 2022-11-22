@@ -4,6 +4,7 @@ import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+//TODO REVIEW Remove all AWS dependencies from your test class
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -26,6 +27,7 @@ class AwsDataObjectHelperTest {
     private AwsCredentialsProvider credentialsProvider;
     private AwsDataObjectHelper objectHelper;
 
+    //TODO REVIEW Before each, all or before class ?
     @BeforeEach
     void setUp() {
         var bucketName = Configuration.get("AWS_BUCKET_NAME");
@@ -61,6 +63,7 @@ class AwsDataObjectHelperTest {
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
     }
 
+    //TODO REVIEW Try to avoid as much as possible exception in test case
     @Test
     void get_nominalCase_success() throws IOException {
         // given
