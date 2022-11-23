@@ -60,7 +60,6 @@ class AwsDataObjectHelperTest {
         assertThrows(NoSuchFileException.class, () -> objectHelper.create(TEST_OBJECT_NAME, invalidImagePath));
     }
 
-    //TODO REVIEW Try to avoid as much as possible exception in test case
     @Test
     void get_nominalCase_success() {
         // given
