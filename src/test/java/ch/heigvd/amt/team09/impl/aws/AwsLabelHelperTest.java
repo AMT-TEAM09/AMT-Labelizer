@@ -1,12 +1,12 @@
 package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.util.Configuration;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,13 +45,28 @@ class AwsLabelHelperTest {
         labelHelper = new AwsLabelHelper(region, credentials);
     }
 
-    @AfterEach
-    void tearDown() {
+    @Test
+    void execute_unreachableUrl_errorThrown() {
+        // given
+        var unreachableUrl = "https://www.invalidurl.com";
+        assertFalse(isUrlValid(unreachableUrl));
 
+        // then
+        assertThrows(IOException.class, () -> labelHelper.execute(unreachableUrl, AwsLabelHelper.NO_OPTIONS));
     }
 
     @Test
-    void execute_NoOptions_success() {
+    void execute_malformedUrl_errorThrown() {
+        // given
+        var malformedUrl = "https/www.invalidurl";
+        assertFalse(isUrlValid(malformedUrl));
+
+        // then
+        assertThrows(MalformedURLException.class, () -> labelHelper.execute(malformedUrl, AwsLabelHelper.NO_OPTIONS));
+    }
+
+    @Test
+    void execute_noOptions_imageAnalyzed() {
         // given
         var imageUrl = IMAGE_URL;
         var expectedLabelName = "Beaver";
@@ -67,7 +82,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_withMinConfidence_success() {
+    void execute_withMinConfidence_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
         var minConfidence = 99;
@@ -85,7 +100,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_withMaxLabels_success() {
+    void execute_withMaxLabels_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
         var maxLabels = 1;
@@ -100,7 +115,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_withMinConfidenceAndMaxLabels_success() {
+    void execute_withMinConfidenceAndMaxLabels_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
         var minConfidence = 99;
@@ -122,7 +137,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_noOptions_success() {
+    void executeFromBase64_noOptions_imageAnalyzed() {
         // given
         var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var expectedLabelName = "Phone";
@@ -136,7 +151,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMinConfidence_success() {
+    void executeFromBase64_withMinConfidence_imageAnalyzedWithOptions() {
         // given
         var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var minConfidence = 90;
@@ -150,7 +165,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMaxLabels_success() {
+    void executeFromBase64_withMaxLabels_imageAnalyzedWithOptions() {
         // given
         var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var maxLabels = 1;
@@ -163,7 +178,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMinConfidenceAndMaxLabels_success() {
+    void executeFromBase64_withMinConfidenceAndMaxLabels_imageAnalyzedWithOptions() {
         // given
         var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var minConfidence = 90;

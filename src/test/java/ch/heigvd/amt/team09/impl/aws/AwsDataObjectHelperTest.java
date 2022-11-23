@@ -37,7 +37,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void create_bucketExists_success() {
+    void create_newObjectInExistingRootObject_objectCreated() {
         // given
         assertTrue(objectHelper.exists());
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
@@ -50,7 +50,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void create_fileNameDoesNotExist_success() {
+    void create_newObjectWithNonExistingFile_errorThrown() {
         // given
         var invalidImagePath = Path.of(IMAGE_FILE + "1");
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
@@ -61,7 +61,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void get_nominalCase_success() {
+    void get_nominalCase_fileDownloaded() {
         // given
         String fileContent = assertDoesNotThrow(() -> {
             try (var stream = Files.newInputStream(IMAGE_FILE)) {
@@ -83,6 +83,24 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
+    void get_nonExistingObject_errorThrown() {
+        // given
+        assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
+
+        // then
+        assertThrows(DataObjectHelper.NoSuchObjectException.class, () -> objectHelper.get(TEST_OBJECT_NAME));
+    }
+
+    @Test
+    void exists_rootObjectNominalCase_success() {
+        // when
+        var exists = objectHelper.exists();
+
+        // then
+        assertTrue(exists);
+    }
+
+    @Test
     void exists_objectNominalCase_success() {
         // given
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
@@ -96,7 +114,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void exists_bucketNotExists_success() {
+    void exists_rootObjectNotExists_success() {
         // given
         var bucketName = "not-existing-bucket";
         var regionName = Configuration.get("AWS_REGION");
@@ -123,7 +141,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void delete_objectNotExists_success() {
+    void delete_objectNotExists_nothingDeleted() {
         // given
         assertTrue(objectHelper.exists());
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
@@ -136,7 +154,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void delete_objectExists_success() {
+    void delete_objectExists_objectDeleted() {
         // given
         assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
@@ -149,7 +167,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void publish_objectExists_success() {
+    void publish_objectExists_urlIsReachable() {
         // given
         assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
@@ -162,16 +180,14 @@ class AwsDataObjectHelperTest {
             var huc = (HttpURLConnection) url.openConnection();
             return huc.getResponseCode();
         });
-
-
         assertEquals(200, responseCode);
     }
 
     @Test
-    void publish_objectNotExists_success() {
+    void publish_objectNotExists_errorThrown() {
         // given
         assertTrue(objectHelper.exists());
-        assertFalse(objectHelper.exists(TEST_OBJECT_NAME + "1"));
+        assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
 
         // then
         assertThrows(DataObjectHelper.NoSuchObjectException.class, () -> objectHelper.publish(TEST_OBJECT_NAME));
