@@ -35,9 +35,7 @@ public class AwsLabelHelper implements LabelHelper {
     public Label[] execute(String imageUrl, Consumer<LabelOptions.Builder> options) throws IOException {
         var url = new URL(imageUrl);
         byte[] imageBytes;
-
-        // TODO on attendait que vous utilisiez la fonctionalité du AWS SDK permettant
-        // d'aller lire l'image directement dans le S3 sans la stream.
+        
         try (var stream = url.openStream()) {
             imageBytes = stream.readAllBytes();
         }
