@@ -1,7 +1,6 @@
 package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -11,7 +10,6 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Duration;
 
@@ -21,16 +19,19 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     private final S3Client client;
     private final S3Presigner presigner;
 
-    public AwsDataObjectHelper(AwsCredentialsProvider credentialsProvider, String bucketName, Region region) {
+    public AwsDataObjectHelper(String bucketName, String regionName, AwsCredentials credentials) {
+        var region = Region.of(regionName);
+
+        this.bucketName = bucketName;
+
         client = S3Client.builder()
-                .credentialsProvider(credentialsProvider)
+                .credentialsProvider(credentials.getProvider())
                 .region(region)
                 .build();
         presigner = S3Presigner.builder()
-                .credentialsProvider(credentialsProvider)
+                .credentialsProvider(credentials.getProvider())
                 .region(region)
                 .build();
-        this.bucketName = bucketName;
     }
 
     @Override

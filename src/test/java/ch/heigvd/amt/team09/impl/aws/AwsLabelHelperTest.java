@@ -2,12 +2,8 @@ package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.rekognition.model.InvalidImageFormatException;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -24,7 +20,7 @@ class AwsLabelHelperTest {
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/6/6b/American_Beaver.jpg";
-    private AwsLabelHelper labelHelper;
+    private static AwsLabelHelper labelHelper;
 
     private static String getImageAsBase64() throws IOException {
         var fileBytes = Files.readAllBytes(IMAGE_FILE);
@@ -41,17 +37,12 @@ class AwsLabelHelperTest {
         }
     }
 
-    @BeforeEach
-    void setUp() {
-        var region = Region.of(Configuration.get("AWS_REGION"));
-        var credentialsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        Configuration.get("AWS_ACCESS_KEY_ID"),
-                        Configuration.get("AWS_SECRET_ACCESS_KEY")
-                )
-        );
+    @BeforeAll
+    static void setUp() {
+        var region = Configuration.get("AWS_REGION");
+        var credentials = Configuration.getAwsCredentials();
 
-        labelHelper = new AwsLabelHelper(credentialsProvider, region);
+        labelHelper = new AwsLabelHelper(region, credentials);
     }
 
     @AfterEach
@@ -192,7 +183,7 @@ class AwsLabelHelperTest {
         var imageString = "invalid";
 
         // then
-        assertThrows(InvalidImageFormatException.class, () -> {
+        assertThrows(Exception.class, () -> {
             labelHelper.executeFromBase64(imageString, AwsLabelHelper.NO_OPTIONS);
         });
     }

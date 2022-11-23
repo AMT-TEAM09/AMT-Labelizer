@@ -3,49 +3,31 @@ package ch.heigvd.amt.team09.impl.aws;
 import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
 import ch.heigvd.amt.team09.util.Configuration;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-//TODO REVIEW Remove all AWS dependencies from your test class
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 
 class AwsDataObjectHelperTest {
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String TEST_OBJECT_NAME = "test-object";
-    private Region region;
-    private AwsCredentialsProvider credentialsProvider;
-    private AwsDataObjectHelper objectHelper;
+    private static AwsDataObjectHelper objectHelper;
 
-    //TODO REVIEW Before each, all or before class ?
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
+        var regionName = Configuration.get("AWS_REGION");
         var bucketName = Configuration.get("AWS_BUCKET_NAME");
+        var credentials = Configuration.getAwsCredentials();
 
-        region = Region.of(Configuration.get("AWS_REGION"));
-        credentialsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        Configuration.get("AWS_ACCESS_KEY_ID"),
-                        Configuration.get("AWS_SECRET_ACCESS_KEY")
-                )
-        );
-
-        objectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
+        objectHelper = new AwsDataObjectHelper(bucketName, regionName, credentials);
     }
 
     @AfterEach
@@ -115,7 +97,9 @@ class AwsDataObjectHelperTest {
     void exists_bucketNotExists_success() {
         // given
         var bucketName = "not-existing-bucket";
-        var objectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
+        var regionName = Configuration.get("AWS_REGION");
+        var credentials = Configuration.getAwsCredentials();
+        var objectHelper = new AwsDataObjectHelper(bucketName, regionName, credentials);
 
         // when
         var exists = objectHelper.exists();
@@ -179,7 +163,7 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void publish_objectNotExists_success(){
+    void publish_objectNotExists_success() {
         // given
         assertTrue(objectHelper.exists());
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME + "1"));
