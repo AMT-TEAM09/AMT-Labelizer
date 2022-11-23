@@ -85,7 +85,7 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     @Override
     public URL publish(String objectName) throws NoSuchObjectException {
         if (!objectExists(objectName))
-            throw new NoSuchObjectException("Object does not exist");
+            throw new NoSuchObjectException(objectName);
 
         var presignRequest = GetObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(URL_EXPIRATION_TIME))
@@ -101,7 +101,10 @@ public class AwsDataObjectHelper implements DataObjectHelper {
 
 
     @Override
-    public InputStream get(String objectName) {
+    public InputStream get(String objectName) throws NoSuchObjectException {
+        if (!objectExists(objectName))
+            throw new NoSuchObjectException(objectName);
+
         var request = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectName)

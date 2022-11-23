@@ -30,7 +30,7 @@ public class App {
             "(url))", order = -2)
     private Integer mode;
 
-    public static void main(String[] args) throws DataObjectHelper.NoSuchObjectException {
+    public static void main(String[] args) {
         var app = new App();
         var jcommander = JCommander.newBuilder()
                 .addObject(app)
@@ -44,7 +44,7 @@ public class App {
             jcommander.usage();
             return;
         }
-        
+
         if (app.help) {
             jcommander.usage();
             return;
@@ -59,7 +59,7 @@ public class App {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
     }
 
-    public String analyze() throws DataObjectHelper.NoSuchObjectException {
+    public String analyze() {
         try {
             return switch (mode) {
                 case 0 -> toPrettyJson(client.analyzeFromBase64(content, getOptions(), remoteFileName));
@@ -67,7 +67,7 @@ public class App {
                 case 2 -> toPrettyJson(client.analyzeFromUrl(content, getOptions(), remoteFileName));
                 default -> "Unknown mode";
             };
-        } catch (IOException e) {
+        } catch (IOException | DataObjectHelper.NoSuchObjectException e) {
             return "An error occurred: " + e.getMessage();
         }
     }

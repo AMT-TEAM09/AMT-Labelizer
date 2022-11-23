@@ -6,10 +6,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -44,7 +43,7 @@ class AwsDataObjectHelperTest {
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
-        objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE);
+        assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
 
         // then
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
@@ -53,28 +52,32 @@ class AwsDataObjectHelperTest {
     @Test
     void create_fileNameDoesNotExist_success() {
         // given
+        var invalidImagePath = Path.of(IMAGE_FILE + "1");
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
+        assertFalse(Files.exists(invalidImagePath));
 
         // then
-        assertThrows(UncheckedIOException.class, () -> objectHelper.create(TEST_OBJECT_NAME, Path.of(IMAGE_FILE + "1")));
+        assertThrows(NoSuchFileException.class, () -> objectHelper.create(TEST_OBJECT_NAME, invalidImagePath));
     }
 
     //TODO REVIEW Try to avoid as much as possible exception in test case
     @Test
-    void get_nominalCase_success() throws IOException {
+    void get_nominalCase_success() {
         // given
-        String fileContent;
-        try (var stream = Files.newInputStream(IMAGE_FILE)) {
-            fileContent = new String(stream.readAllBytes());
-        }
-        objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE);
+        String fileContent = assertDoesNotThrow(() -> {
+            try (var stream = Files.newInputStream(IMAGE_FILE)) {
+                return new String(stream.readAllBytes());
+            }
+        });
+        assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
-        String downloadedContent;
-        try (var downloaded = objectHelper.get(TEST_OBJECT_NAME)) {
-            downloadedContent = new String(downloaded.readAllBytes());
-        }
+        String downloadedContent = assertDoesNotThrow(() -> {
+            try (var downloaded = objectHelper.get(TEST_OBJECT_NAME)) {
+                return new String(downloaded.readAllBytes());
+            }
+        });
 
         // then
         assertEquals(fileContent, downloadedContent);
@@ -84,7 +87,7 @@ class AwsDataObjectHelperTest {
     void exists_objectNominalCase_success() {
         // given
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
-        objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE);
+        assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
 
         // when
         var exists = objectHelper.exists(TEST_OBJECT_NAME);
@@ -136,7 +139,7 @@ class AwsDataObjectHelperTest {
     @Test
     void delete_objectExists_success() {
         // given
-        objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE);
+        assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
@@ -147,17 +150,20 @@ class AwsDataObjectHelperTest {
     }
 
     @Test
-    void publish_objectExists_success() throws IOException {
+    void publish_objectExists_success() {
         // given
-        objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE);
+        assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
         var url = assertDoesNotThrow(() -> (objectHelper.publish(TEST_OBJECT_NAME)));
 
         // then
-        var huc = (HttpURLConnection) url.openConnection();
-        var responseCode = huc.getResponseCode();
+        var responseCode = assertDoesNotThrow(() -> {
+            var huc = (HttpURLConnection) url.openConnection();
+            return huc.getResponseCode();
+        });
+
 
         assertEquals(200, responseCode);
     }

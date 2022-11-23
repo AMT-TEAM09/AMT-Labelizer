@@ -51,7 +51,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_NoOptions_success() throws IOException {
+    void execute_NoOptions_success() {
         // given
         var imageUrl = IMAGE_URL;
         var expectedLabelName = "Beaver";
@@ -59,7 +59,7 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, AwsLabelHelper.NO_OPTIONS);
+        var labels = assertDoesNotThrow(() -> labelHelper.execute(imageUrl, AwsLabelHelper.NO_OPTIONS));
 
         // then
         assertTrue(labels.length > 0);
@@ -67,7 +67,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_withMinConfidence_success() throws IOException {
+    void execute_withMinConfidence_success() {
         // given
         var imageUrl = IMAGE_URL;
         var minConfidence = 99;
@@ -75,7 +75,9 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, options -> options.minConfidence(minConfidence));
+        var labels = assertDoesNotThrow(() ->
+                labelHelper.execute(imageUrl, options -> options.minConfidence(minConfidence))
+        );
 
         // then
         assertTrue(labels.length > 0);
@@ -83,7 +85,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_withMaxLabels_success() throws IOException {
+    void execute_withMaxLabels_success() {
         // given
         var imageUrl = IMAGE_URL;
         var maxLabels = 1;
@@ -91,14 +93,14 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, options -> options.maxLabels(maxLabels));
+        var labels = assertDoesNotThrow(() -> labelHelper.execute(imageUrl, options -> options.maxLabels(maxLabels)));
 
         // then
         assertEquals(labels.length, maxLabels);
     }
 
     @Test
-    void execute_withMinConfidenceAndMaxLabels_success() throws IOException {
+    void execute_withMinConfidenceAndMaxLabels_success() {
         // given
         var imageUrl = IMAGE_URL;
         var minConfidence = 99;
@@ -107,10 +109,11 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, options -> {
-                    options.minConfidence(minConfidence);
-                    options.maxLabels(maxLabels);
-                }
+        var labels = assertDoesNotThrow(() -> labelHelper.execute(imageUrl, options -> {
+                            options.minConfidence(minConfidence);
+                            options.maxLabels(maxLabels);
+                        }
+                )
         );
 
         // then
@@ -119,9 +122,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_noOptions_success() throws IOException {
+    void executeFromBase64_noOptions_success() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var expectedLabelName = "Phone";
 
         // when
@@ -133,9 +136,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMinConfidence_success() throws IOException {
+    void executeFromBase64_withMinConfidence_success() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var minConfidence = 90;
 
         // when
@@ -147,9 +150,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMaxLabels_success() throws IOException {
+    void executeFromBase64_withMaxLabels_success() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var maxLabels = 1;
 
         // when
@@ -160,9 +163,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMinConfidenceAndMaxLabels_success() throws IOException {
+    void executeFromBase64_withMinConfidenceAndMaxLabels_success() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var minConfidence = 90;
         var maxLabels = 1;
 
@@ -183,8 +186,6 @@ class AwsLabelHelperTest {
         var imageString = "invalid";
 
         // then
-        assertThrows(Exception.class, () -> {
-            labelHelper.executeFromBase64(imageString, AwsLabelHelper.NO_OPTIONS);
-        });
+        assertThrows(Exception.class, () -> labelHelper.executeFromBase64(imageString, AwsLabelHelper.NO_OPTIONS));
     }
 }

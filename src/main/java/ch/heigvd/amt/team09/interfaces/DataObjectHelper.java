@@ -2,12 +2,13 @@ package ch.heigvd.amt.team09.interfaces;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 public interface DataObjectHelper {
     void create();
 
-    void create(String objectName, Path filePath);
+    void create(String objectName, Path filePath) throws NoSuchFileException;
 
     boolean exists(String objectName);
 
@@ -19,11 +20,11 @@ public interface DataObjectHelper {
 
     URL publish(String objectName) throws NoSuchObjectException;
 
-    InputStream get(String objectName);
+    InputStream get(String objectName) throws NoSuchObjectException;
 
     class NoSuchObjectException extends Exception {
-        public NoSuchObjectException(String message) {
-            super(message);
+        public NoSuchObjectException(String objectName) {
+            super("Object %s does not exist".formatted(objectName));
         }
     }
 }
