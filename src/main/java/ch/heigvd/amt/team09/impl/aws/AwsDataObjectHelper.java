@@ -14,8 +14,11 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AwsDataObjectHelper implements DataObjectHelper {
+    private static final Logger LOG = Logger.getLogger(AwsDataObjectHelper.class.getName());
     private static final int URL_EXPIRATION_TIME = 2; // in minutes
     private final String bucketName;
     private final S3Client client;
@@ -46,7 +49,7 @@ public class AwsDataObjectHelper implements DataObjectHelper {
         if (Files.notExists(filePath)) {
             throw new NoSuchFileException(filePath.toString());
         }
-        
+
         if (!bucketExists()) {
             createBucket();
         }
@@ -153,7 +156,8 @@ public class AwsDataObjectHelper implements DataObjectHelper {
         try {
             client.headObject(request);
             return true;
-        } catch (NoSuchKeyException ignored) {
+        } catch (NoSuchKeyException e) {
+            LOG.log(Level.INFO, "Object not found {0}: {1}", new String[]{objectName, e.getMessage()});
             return false;
         }
     }
