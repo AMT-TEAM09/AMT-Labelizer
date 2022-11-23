@@ -16,26 +16,31 @@ public class Configuration {
     }
 
     public static String get(String key) {
-        return dotenv.get(key);
-    }
-
-    private static String getOrThrow(String key) {
-        var value = get(key);
+        var value = dotenv.get(key);
+        
         if (value == null) {
             throw new MissingKeyException(key);
         }
+
         return value;
+    }
+
+    public static long getUnsignedLong(String key) {
+        var value = get(key);
+
+        try {
+            return Long.parseUnsignedLong(value);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("The value of %s is not a valid unsigned long: %s".formatted(key, e.getMessage()));
+        }
     }
 
     public static AwsCredentials getAwsCredentials() {
         if (awsCredentials == null) {
-            var accessKey = getOrThrow("AWS_ACCESS_KEY_ID");
-            var secretKey = getOrThrow("AWS_SECRET_ACCESS_KEY");
+            var accessKey = get("AWS_ACCESS_KEY_ID");
+            var secretKey = get("AWS_SECRET_ACCESS_KEY");
 
-            awsCredentials = new AwsCredentials(
-                    accessKey,
-                    secretKey
-            );
+            awsCredentials = new AwsCredentials(accessKey, secretKey);
         }
         return awsCredentials;
     }

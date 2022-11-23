@@ -10,17 +10,22 @@ import ch.heigvd.amt.team09.util.JsonHelper;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.function.Consumer;
 
 public class AwsCloudClient implements CloudClient {
     private static AwsCloudClient instance;
     private final AwsDataObjectHelper dataObjectHelper;
     private final AwsLabelHelper labelDetector;
+    private final Duration urlDuration;
 
     private AwsCloudClient() {
         var credentials = Configuration.getAwsCredentials();
         var regionName = Configuration.get("AWS_REGION");
         var bucketName = Configuration.get("AWS_BUCKET_NAME");
+
+        var urlDurationInSeconds = Configuration.getUnsignedLong("AWS_URL_DURATION_IN_SECONDS");
+        this.urlDuration = Duration.ofSeconds(urlDurationInSeconds);
 
         dataObjectHelper = new AwsDataObjectHelper(bucketName, regionName, credentials);
         labelDetector = new AwsLabelHelper(regionName, credentials);
@@ -82,7 +87,7 @@ public class AwsCloudClient implements CloudClient {
             return getError(String.format("Object %s does not exist.", objectName));
         }
 
-        var url = dataObjectHelper.publish(objectName);
+        var url = dataObjectHelper.publish(objectName, urlDuration);
 
         return analyzeFromUrl(url.toString(), options, remoteFileName);
     }

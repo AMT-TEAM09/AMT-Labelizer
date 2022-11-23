@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 public class AwsDataObjectHelper implements DataObjectHelper {
     private static final Logger LOG = Logger.getLogger(AwsDataObjectHelper.class.getName());
-    private static final int URL_EXPIRATION_TIME = 2; // in minutes
     private final String bucketName;
     private final S3Client client;
     private final S3Presigner presigner;
@@ -92,12 +91,16 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     }
 
     @Override
-    public URL publish(String objectName) throws NoSuchObjectException {
-        if (!objectExists(objectName))
+    public URL publish(String objectName, Duration urlDuration) throws NoSuchObjectException {
+        if (urlDuration.isNegative() || urlDuration.isZero())
+            throw new IllegalArgumentException("Duration must be positive");
+
+        if (!objectExists(objectName)) {
             throw new NoSuchObjectException(objectName);
+        }
 
         var presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(URL_EXPIRATION_TIME))
+                .signatureDuration(urlDuration)
                 .getObjectRequest(b -> {
                     b.bucket(bucketName);
                     b.key(objectName);

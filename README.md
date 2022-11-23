@@ -37,6 +37,7 @@ Un utilisateur [AWS IAM](https://aws.amazon.com/iam/) avec les droits suivants :
 ## Récupération les dépendances
 
 Pour récupérer la liste des dépendances, il faut lancer la commande suivante à la racine du projet :
+
 ```
 mvn dependency:resolve
 ```
@@ -56,10 +57,12 @@ AWS_ACCESS_KEY_ID= ...
 AWS_SECRET_ACCESS_KEY= ...
 AWS_BUCKET_NAME= ...
 AWS_REGION= ...
+AWS_URL_DURATION_IN_SECONDS= ... # Durée de validité des liens générés lors de la publication des objets
 ```
 
 La region doit être définie selon la colonne `Region` du tableau présenté dans  
-[la documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html#Concepts.RegionsAndAvailabilityZones.Regions).
+[la documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html#Concepts.RegionsAndAvailabilityZones.Regions)
+.
 
 ## Tests
 
@@ -81,7 +84,8 @@ Pour lancer un test spécifique :
 mvn -Dtest=NomDeLaClasseDeTest#nomDuTest test
 ```
 
-Plus d'infos, consultez la [documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/single-test.html)
+Plus d'infos, consultez
+la [documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/single-test.html)
 
 ## :rocket: Lancement
 

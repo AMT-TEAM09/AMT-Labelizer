@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.Duration;
 
 public interface DataObjectHelper {
     void create();
@@ -18,7 +19,7 @@ public interface DataObjectHelper {
 
     void delete(String objectName);
 
-    URL publish(String objectName) throws NoSuchObjectException;
+    URL publish(String objectName, Duration urlDuration) throws NoSuchObjectException;
 
     InputStream get(String objectName) throws NoSuchObjectException;
 

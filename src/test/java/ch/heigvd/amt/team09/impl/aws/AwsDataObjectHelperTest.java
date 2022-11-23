@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -173,7 +174,12 @@ class AwsDataObjectHelperTest {
         assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
 
         // when
-        var url = assertDoesNotThrow(() -> (objectHelper.publish(TEST_OBJECT_NAME)));
+        var url = assertDoesNotThrow(() ->
+                objectHelper.publish(
+                        TEST_OBJECT_NAME,
+                        Duration.ofSeconds(30)
+                )
+        );
 
         // then
         var responseCode = assertDoesNotThrow(() -> {
@@ -190,6 +196,45 @@ class AwsDataObjectHelperTest {
         assertFalse(objectHelper.exists(TEST_OBJECT_NAME));
 
         // then
-        assertThrows(DataObjectHelper.NoSuchObjectException.class, () -> objectHelper.publish(TEST_OBJECT_NAME));
+        assertThrows(DataObjectHelper.NoSuchObjectException.class, () ->
+                objectHelper.publish(
+                        TEST_OBJECT_NAME,
+                        Duration.ofSeconds(30)
+                )
+        );
+    }
+
+    @Test
+    void publish_negativeUrlDuration_errorThrown() {
+        // given
+        var urlDuration = Duration.ofSeconds(-1);
+
+        assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
+
+        // then
+        assertThrows(IllegalArgumentException.class, () ->
+                objectHelper.publish(
+                        TEST_OBJECT_NAME,
+                        urlDuration
+                )
+        );
+    }
+
+    @Test
+    void publish_zeroUrlDuration_errorThrown() {
+        // given
+        var urlDuration = Duration.ZERO;
+
+        assertDoesNotThrow(() -> objectHelper.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertTrue(objectHelper.exists(TEST_OBJECT_NAME));
+
+        // then
+        assertThrows(IllegalArgumentException.class, () ->
+                objectHelper.publish(
+                        TEST_OBJECT_NAME,
+                        urlDuration
+                )
+        );
     }
 }
