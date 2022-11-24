@@ -20,7 +20,7 @@ public class AwsCloudClient implements CloudClient {
     private final Duration urlDuration;
 
     private AwsCloudClient() {
-        var credentials = Configuration.getAwsCredentials();
+        var credentials = AwsCredentials.fromConfig();
         var regionName = Configuration.get("AWS_REGION");
         var bucketName = Configuration.get("AWS_BUCKET_NAME");
 

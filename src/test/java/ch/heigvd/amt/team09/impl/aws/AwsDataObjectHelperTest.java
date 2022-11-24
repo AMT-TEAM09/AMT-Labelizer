@@ -25,7 +25,7 @@ class AwsDataObjectHelperTest {
     static void setUp() {
         var regionName = Configuration.get("AWS_REGION");
         var bucketName = Configuration.get("AWS_BUCKET_NAME");
-        var credentials = Configuration.getAwsCredentials();
+        var credentials = AwsCredentials.fromConfig();
 
         objectHelper = new AwsDataObjectHelper(bucketName, regionName, credentials);
     }
@@ -119,7 +119,7 @@ class AwsDataObjectHelperTest {
         // given
         var bucketName = "not-existing-bucket";
         var regionName = Configuration.get("AWS_REGION");
-        var credentials = Configuration.getAwsCredentials();
+        var credentials = AwsCredentials.fromConfig();
         var objectHelper = new AwsDataObjectHelper(bucketName, regionName, credentials);
 
         // when

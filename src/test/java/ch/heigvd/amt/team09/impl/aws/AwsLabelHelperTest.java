@@ -40,7 +40,7 @@ class AwsLabelHelperTest {
     @BeforeAll
     static void setUp() {
         var region = Configuration.get("AWS_REGION");
-        var credentials = Configuration.getAwsCredentials();
+        var credentials = AwsCredentials.fromConfig();
 
         labelHelper = new AwsLabelHelper(region, credentials);
     }
