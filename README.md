@@ -50,6 +50,12 @@ Pour installer le projet, il suffit de cloner le projet et de lancer la commande
 mvn install
 ```
 
+Il est possible d'éviter de lancer les tests en ajoutant l'option `-DskipTests` à la commande précédente.
+
+```
+mvn install -DskipTests
+```
+
 Un fichier `.env` doit ensuite être créé à la racine du projet avec les informations suivantes :
 
 ```
