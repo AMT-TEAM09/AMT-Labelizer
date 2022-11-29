@@ -13,6 +13,28 @@ public class Configuration {
     }
 
     public static String get(String key) {
-        return dotenv.get(key);
+        var value = dotenv.get(key);
+
+        if (value == null) {
+            throw new MissingKeyException(key);
+        }
+
+        return value;
+    }
+
+    public static long getUnsignedLong(String key) {
+        var value = get(key);
+
+        try {
+            return Long.parseUnsignedLong(value);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("The value of %s is not a valid unsigned long: %s".formatted(key, e.getMessage()));
+        }
+    }
+
+    public static class MissingKeyException extends RuntimeException {
+        private MissingKeyException(String key) {
+            super("Key %s not found in environment variables or .env file".formatted(key));
+        }
     }
 }

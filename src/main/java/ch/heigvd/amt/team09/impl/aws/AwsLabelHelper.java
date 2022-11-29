@@ -2,7 +2,6 @@ package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.LabelHelper;
 import ch.heigvd.amt.team09.models.Label;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
@@ -23,9 +22,11 @@ public class AwsLabelHelper implements LabelHelper {
     private static final Logger LOG = Logger.getLogger(AwsLabelHelper.class.getName());
     private final RekognitionClient client;
 
-    public AwsLabelHelper(AwsCredentialsProvider credentialsProvider, Region region) {
+    public AwsLabelHelper(String regionName, AwsCredentials credentials) {
+        var region = Region.of(regionName);
+
         client = RekognitionClient.builder()
-                .credentialsProvider(credentialsProvider)
+                .credentialsProvider(credentials.getProvider())
                 .region(region)
                 .build();
     }
@@ -34,7 +35,7 @@ public class AwsLabelHelper implements LabelHelper {
     public Label[] execute(String imageUrl, Consumer<LabelOptions.Builder> options) throws IOException {
         var url = new URL(imageUrl);
         byte[] imageBytes;
-
+        
         try (var stream = url.openStream()) {
             imageBytes = stream.readAllBytes();
         }

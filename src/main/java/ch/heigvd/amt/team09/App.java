@@ -2,6 +2,7 @@ package ch.heigvd.amt.team09;
 
 import ch.heigvd.amt.team09.impl.aws.AwsCloudClient;
 import ch.heigvd.amt.team09.interfaces.CloudClient;
+import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
 import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -43,7 +44,7 @@ public class App {
             jcommander.usage();
             return;
         }
-        
+
         if (app.help) {
             jcommander.usage();
             return;
@@ -66,7 +67,7 @@ public class App {
                 case 2 -> toPrettyJson(client.analyzeFromUrl(content, getOptions(), remoteFileName));
                 default -> "Unknown mode";
             };
-        } catch (IOException e) {
+        } catch (IOException | DataObjectHelper.NoSuchObjectException e) {
             return "An error occurred: " + e.getMessage();
         }
     }

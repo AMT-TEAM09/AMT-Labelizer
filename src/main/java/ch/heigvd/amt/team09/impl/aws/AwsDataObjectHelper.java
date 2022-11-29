@@ -1,7 +1,6 @@
 package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -11,25 +10,32 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AwsDataObjectHelper implements DataObjectHelper {
-    private static final int URL_EXPIRATION_TIME = 2; // in minutes
+    private static final Logger LOG = Logger.getLogger(AwsDataObjectHelper.class.getName());
     private final String bucketName;
     private final S3Client client;
     private final S3Presigner presigner;
 
-    public AwsDataObjectHelper(AwsCredentialsProvider credentialsProvider, String bucketName, Region region) {
+    public AwsDataObjectHelper(String bucketName, String regionName, AwsCredentials credentials) {
+        var region = Region.of(regionName);
+
+        this.bucketName = bucketName;
+
         client = S3Client.builder()
-                .credentialsProvider(credentialsProvider)
+                .credentialsProvider(credentials.getProvider())
                 .region(region)
                 .build();
         presigner = S3Presigner.builder()
-                .credentialsProvider(credentialsProvider)
+                .credentialsProvider(credentials.getProvider())
                 .region(region)
                 .build();
-        this.bucketName = bucketName;
     }
 
     @Override
@@ -38,7 +44,11 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     }
 
     @Override
-    public void create(String objectName, Path filePath) {
+    public void create(String objectName, Path filePath) throws NoSuchFileException {
+        if (Files.notExists(filePath)) {
+            throw new NoSuchFileException(filePath.toString());
+        }
+
         if (!bucketExists()) {
             createBucket();
         }
@@ -81,12 +91,16 @@ public class AwsDataObjectHelper implements DataObjectHelper {
     }
 
     @Override
-    public URL publish(String objectName) {
-        if (!objectExists(objectName))
-            return null;
+    public URL publish(String objectName, Duration urlDuration) throws NoSuchObjectException {
+        if (urlDuration.isNegative() || urlDuration.isZero())
+            throw new IllegalArgumentException("Duration must be positive");
+
+        if (!objectExists(objectName)) {
+            throw new NoSuchObjectException(objectName);
+        }
 
         var presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(URL_EXPIRATION_TIME))
+                .signatureDuration(urlDuration)
                 .getObjectRequest(b -> {
                     b.bucket(bucketName);
                     b.key(objectName);
@@ -99,7 +113,10 @@ public class AwsDataObjectHelper implements DataObjectHelper {
 
 
     @Override
-    public InputStream get(String objectName) {
+    public InputStream get(String objectName) throws NoSuchObjectException {
+        if (!objectExists(objectName))
+            throw new NoSuchObjectException(objectName);
+
         var request = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectName)
@@ -142,7 +159,8 @@ public class AwsDataObjectHelper implements DataObjectHelper {
         try {
             client.headObject(request);
             return true;
-        } catch (NoSuchKeyException ignored) {
+        } catch (NoSuchKeyException e) {
+            LOG.log(Level.INFO, "Object not found {0}: {1}", new String[]{objectName, e.getMessage()});
             return false;
         }
     }

@@ -2,12 +2,14 @@ package ch.heigvd.amt.team09.interfaces;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.Duration;
 
 public interface DataObjectHelper {
     void create();
 
-    void create(String objectName, Path filePath);
+    void create(String objectName, Path filePath) throws NoSuchFileException;
 
     boolean exists(String objectName);
 
@@ -17,7 +19,14 @@ public interface DataObjectHelper {
 
     void delete(String objectName);
 
-    URL publish(String objectName);
+    URL publish(String objectName, Duration urlDuration) throws NoSuchObjectException;
 
-    InputStream get(String objectName);
+    InputStream get(String objectName) throws NoSuchObjectException;
+
+    class NoSuchObjectException extends Exception {
+        public NoSuchObjectException(String objectName) {
+            super("Object %s does not exist".formatted(objectName));
+        }
+    }
 }
+

@@ -1,16 +1,12 @@
 package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.util.Configuration;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.rekognition.model.InvalidImageFormatException;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +20,7 @@ class AwsLabelHelperTest {
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/6/6b/American_Beaver.jpg";
-    private AwsLabelHelper labelHelper;
+    private static AwsLabelHelper labelHelper;
 
     private static String getImageAsBase64() throws IOException {
         var fileBytes = Files.readAllBytes(IMAGE_FILE);
@@ -41,26 +37,36 @@ class AwsLabelHelperTest {
         }
     }
 
-    @BeforeEach
-    void setUp() {
-        var region = Region.of(Configuration.get("AWS_REGION"));
-        var credentialsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        Configuration.get("AWS_ACCESS_KEY_ID"),
-                        Configuration.get("AWS_SECRET_ACCESS_KEY")
-                )
-        );
+    @BeforeAll
+    static void setUp() {
+        var region = Configuration.get("AWS_REGION");
+        var credentials = AwsCredentials.fromConfig();
 
-        labelHelper = new AwsLabelHelper(credentialsProvider, region);
-    }
-
-    @AfterEach
-    void tearDown() {
-
+        labelHelper = new AwsLabelHelper(region, credentials);
     }
 
     @Test
-    void execute_NoOptions_success() throws IOException {
+    void execute_unreachableUrl_errorThrown() {
+        // given
+        var unreachableUrl = "https://www.invalidurl.com";
+        assertFalse(isUrlValid(unreachableUrl));
+
+        // then
+        assertThrows(IOException.class, () -> labelHelper.execute(unreachableUrl, AwsLabelHelper.NO_OPTIONS));
+    }
+
+    @Test
+    void execute_malformedUrl_errorThrown() {
+        // given
+        var malformedUrl = "https/www.invalidurl";
+        assertFalse(isUrlValid(malformedUrl));
+
+        // then
+        assertThrows(MalformedURLException.class, () -> labelHelper.execute(malformedUrl, AwsLabelHelper.NO_OPTIONS));
+    }
+
+    @Test
+    void execute_noOptions_imageAnalyzed() {
         // given
         var imageUrl = IMAGE_URL;
         var expectedLabelName = "Beaver";
@@ -68,7 +74,7 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, AwsLabelHelper.NO_OPTIONS);
+        var labels = assertDoesNotThrow(() -> labelHelper.execute(imageUrl, AwsLabelHelper.NO_OPTIONS));
 
         // then
         assertTrue(labels.length > 0);
@@ -76,7 +82,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_withMinConfidence_success() throws IOException {
+    void execute_withMinConfidence_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
         var minConfidence = 99;
@@ -84,7 +90,9 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, options -> options.minConfidence(minConfidence));
+        var labels = assertDoesNotThrow(() ->
+                labelHelper.execute(imageUrl, options -> options.minConfidence(minConfidence))
+        );
 
         // then
         assertTrue(labels.length > 0);
@@ -92,7 +100,7 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void execute_withMaxLabels_success() throws IOException {
+    void execute_withMaxLabels_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
         var maxLabels = 1;
@@ -100,14 +108,14 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, options -> options.maxLabels(maxLabels));
+        var labels = assertDoesNotThrow(() -> labelHelper.execute(imageUrl, options -> options.maxLabels(maxLabels)));
 
         // then
         assertEquals(labels.length, maxLabels);
     }
 
     @Test
-    void execute_withMinConfidenceAndMaxLabels_success() throws IOException {
+    void execute_withMinConfidenceAndMaxLabels_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
         var minConfidence = 99;
@@ -116,10 +124,11 @@ class AwsLabelHelperTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = labelHelper.execute(imageUrl, options -> {
-                    options.minConfidence(minConfidence);
-                    options.maxLabels(maxLabels);
-                }
+        var labels = assertDoesNotThrow(() -> labelHelper.execute(imageUrl, options -> {
+                            options.minConfidence(minConfidence);
+                            options.maxLabels(maxLabels);
+                        }
+                )
         );
 
         // then
@@ -128,9 +137,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_noOptions_success() throws IOException {
+    void executeFromBase64_noOptions_imageAnalyzed() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var expectedLabelName = "Phone";
 
         // when
@@ -142,9 +151,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMinConfidence_success() throws IOException {
+    void executeFromBase64_withMinConfidence_imageAnalyzedWithOptions() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var minConfidence = 90;
 
         // when
@@ -156,9 +165,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMaxLabels_success() throws IOException {
+    void executeFromBase64_withMaxLabels_imageAnalyzedWithOptions() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var maxLabels = 1;
 
         // when
@@ -169,9 +178,9 @@ class AwsLabelHelperTest {
     }
 
     @Test
-    void executeFromBase64_withMinConfidenceAndMaxLabels_success() throws IOException {
+    void executeFromBase64_withMinConfidenceAndMaxLabels_imageAnalyzedWithOptions() {
         // given
-        var imageString = getImageAsBase64();
+        var imageString = assertDoesNotThrow(AwsLabelHelperTest::getImageAsBase64);
         var minConfidence = 90;
         var maxLabels = 1;
 
@@ -192,8 +201,6 @@ class AwsLabelHelperTest {
         var imageString = "invalid";
 
         // then
-        assertThrows(InvalidImageFormatException.class, () -> {
-            labelHelper.executeFromBase64(imageString, AwsLabelHelper.NO_OPTIONS);
-        });
+        assertThrows(Exception.class, () -> labelHelper.executeFromBase64(imageString, AwsLabelHelper.NO_OPTIONS));
     }
 }

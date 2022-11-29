@@ -1,36 +1,34 @@
 package ch.heigvd.amt.team09.impl.aws;
 
 import ch.heigvd.amt.team09.interfaces.CloudClient;
+import ch.heigvd.amt.team09.interfaces.DataObjectHelper;
 import ch.heigvd.amt.team09.interfaces.LabelHelper.LabelOptions;
 import ch.heigvd.amt.team09.models.Label;
 import ch.heigvd.amt.team09.util.Configuration;
 import ch.heigvd.amt.team09.util.FilesHelper;
 import ch.heigvd.amt.team09.util.JsonHelper;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.function.Consumer;
 
 public class AwsCloudClient implements CloudClient {
     private static AwsCloudClient instance;
     private final AwsDataObjectHelper dataObjectHelper;
     private final AwsLabelHelper labelDetector;
+    private final Duration urlDuration;
 
     private AwsCloudClient() {
+        var credentials = AwsCredentials.fromConfig();
+        var regionName = Configuration.get("AWS_REGION");
         var bucketName = Configuration.get("AWS_BUCKET_NAME");
-        var credentialsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        Configuration.get("AWS_ACCESS_KEY_ID"),
-                        Configuration.get("AWS_SECRET_ACCESS_KEY")
-                )
-        );
-        var region = Region.of(Configuration.get("AWS_REGION"));
 
-        dataObjectHelper = new AwsDataObjectHelper(credentialsProvider, bucketName, region);
-        labelDetector = new AwsLabelHelper(credentialsProvider, region);
+        var urlDurationInSeconds = Configuration.getUnsignedLong("AWS_URL_DURATION_IN_SECONDS");
+        this.urlDuration = Duration.ofSeconds(urlDurationInSeconds);
+
+        dataObjectHelper = new AwsDataObjectHelper(bucketName, regionName, credentials);
+        labelDetector = new AwsLabelHelper(regionName, credentials);
     }
 
     public static AwsCloudClient getInstance() {
@@ -84,18 +82,18 @@ public class AwsCloudClient implements CloudClient {
     }
 
     @Override
-    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException {
+    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options, String remoteFileName) throws IOException, DataObjectHelper.NoSuchObjectException {
         if (!dataObjectHelper.exists(objectName)) {
             return getError(String.format("Object %s does not exist.", objectName));
         }
 
-        var url = dataObjectHelper.publish(objectName);
+        var url = dataObjectHelper.publish(objectName, urlDuration);
 
         return analyzeFromUrl(url.toString(), options, remoteFileName);
     }
 
     @Override
-    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options) throws IOException {
+    public String analyzeFromObject(String objectName, Consumer<LabelOptions.Builder> options) throws IOException, DataObjectHelper.NoSuchObjectException {
         return analyzeFromObject(objectName, options, null);
     }
 
