@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.stream.Collectors;
 
+// TODO améliorer les messages
 @ControllerAdvice
 public class RekognitionExceptionHandler {
     @ResponseBody
@@ -39,8 +40,8 @@ public class RekognitionExceptionHandler {
     @ResponseBody
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String handleMissingRequestBody(HttpMessageNotReadableException ignored) {
-        return "Request body is missing:" + ignored.getMostSpecificCause().getMessage();
+    String handleMissingRequestBody(HttpMessageNotReadableException e) {
+        return e.getMessage();
     }
 
     @ResponseBody
