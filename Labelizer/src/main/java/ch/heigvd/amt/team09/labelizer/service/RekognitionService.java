@@ -25,6 +25,8 @@ import java.util.function.Consumer;
 public class RekognitionService {
     public static final Consumer<RekognitionOptions.Builder> NO_OPTIONS = b -> {
     };
+    public static final int DEFAULT_MAX_LABELS = 10;
+    public static final float DEFAULT_MIN_CONFIDENCE = 90.0f;
     private static final Logger LOG = LoggerFactory.getLogger(RekognitionService.class.getName());
     private final RekognitionClient client;
 
@@ -87,8 +89,8 @@ public class RekognitionService {
         optionsOperations.accept(builder);
         var options = builder.build();
 
-        options.maxLabels().ifPresent(requestBuilder::maxLabels);
-        options.minConfidence().ifPresent(requestBuilder::minConfidence);
+        requestBuilder.minConfidence(options.minConfidence().orElse(DEFAULT_MIN_CONFIDENCE));
+        requestBuilder.maxLabels(options.maxLabels().orElse(DEFAULT_MAX_LABELS));
 
         LOG.info("Sending request to AWS Rekognition");
         var start = System.currentTimeMillis();

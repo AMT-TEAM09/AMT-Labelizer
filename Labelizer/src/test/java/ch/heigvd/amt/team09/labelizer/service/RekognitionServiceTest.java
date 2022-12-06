@@ -78,10 +78,10 @@ class RekognitionServiceTest {
     }
 
     @Test
-    void execute_withMinConfidence_imageAnalyzedWithOptions() {
+    void execute_withMinConfidence70_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
-        var minConfidence = 99;
+        var minConfidence = 70;
 
         assertTrue(isUrlValid(imageUrl));
 
@@ -96,10 +96,10 @@ class RekognitionServiceTest {
     }
 
     @Test
-    void execute_withMaxLabels_imageAnalyzedWithOptions() {
+    void execute_withMaxLabels6_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
-        var maxLabels = 1;
+        var maxLabels = 6;
 
         assertTrue(isUrlValid(imageUrl));
 
@@ -107,15 +107,15 @@ class RekognitionServiceTest {
         var labels = assertDoesNotThrow(() -> rekognitionService.execute(imageUrl, options -> options.maxLabels(maxLabels)));
 
         // then
-        assertEquals(labels.length, maxLabels);
+        assertEquals(maxLabels, labels.length);
     }
 
     @Test
-    void execute_withMinConfidenceAndMaxLabels_imageAnalyzedWithOptions() {
+    void execute_withMinConfidence50AndMaxLabels6_imageAnalyzedWithOptions() {
         // given
         var imageUrl = IMAGE_URL;
-        var minConfidence = 99;
-        var maxLabels = 1;
+        var minConfidence = 50;
+        var maxLabels = 6;
 
         assertTrue(isUrlValid(imageUrl));
 
@@ -128,7 +128,7 @@ class RekognitionServiceTest {
         );
 
         // then
-        assertEquals(labels.length, maxLabels);
+        assertEquals(maxLabels, labels.length);
         assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= minConfidence));
     }
 
@@ -147,10 +147,10 @@ class RekognitionServiceTest {
     }
 
     @Test
-    void executeFromBase64_withMinConfidence_imageAnalyzedWithOptions() {
+    void executeFromBase64_withMinConfidence70_imageAnalyzedWithOptions() {
         // given
         var imageString = assertDoesNotThrow(RekognitionServiceTest::getImageAsBase64);
-        var minConfidence = 90;
+        var minConfidence = 70;
 
         // when
         var labels = rekognitionService.executeFromBase64(imageString, options -> options.minConfidence(minConfidence));
@@ -161,24 +161,24 @@ class RekognitionServiceTest {
     }
 
     @Test
-    void executeFromBase64_withMaxLabels_imageAnalyzedWithOptions() {
+    void executeFromBase64_withMaxLabels6_imageAnalyzedWithOptions() {
         // given
         var imageString = assertDoesNotThrow(RekognitionServiceTest::getImageAsBase64);
-        var maxLabels = 1;
+        var maxLabels = 6;
 
         // when
         var labels = rekognitionService.executeFromBase64(imageString, options -> options.maxLabels(maxLabels));
 
         // then
-        assertEquals(labels.length, maxLabels);
+        assertEquals(maxLabels, labels.length);
     }
 
     @Test
-    void executeFromBase64_withMinConfidenceAndMaxLabels_imageAnalyzedWithOptions() {
+    void executeFromBase64_withMinConfidence50AndMaxLabels30_imageAnalyzedWithOptions() {
         // given
         var imageString = assertDoesNotThrow(RekognitionServiceTest::getImageAsBase64);
-        var minConfidence = 90;
-        var maxLabels = 1;
+        var minConfidence = 50;
+        var maxLabels = 30;
 
         // when
         var labels = rekognitionService.executeFromBase64(imageString, options -> {
@@ -187,7 +187,7 @@ class RekognitionServiceTest {
         });
 
         // then
-        assertEquals(labels.length, maxLabels);
+        assertEquals(maxLabels, labels.length);
         assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= minConfidence));
     }
 
