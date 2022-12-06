@@ -151,3 +151,8 @@ java -jar app.jar -m 2 https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d
 ```
 
 Grâce au paramètre `-r`, les résultats seront disponibles sur le bucket S3 dans l'objet `cat`.
+
+
+## Docker
+
+Pour build faire `docker build --build-arg AWS_REGION=eu-west-2 .`. Il peut y avoir une erreur, si c'est le cas aller sur docker Desktop -> options -> docker engine et mettre buildkit a false.
