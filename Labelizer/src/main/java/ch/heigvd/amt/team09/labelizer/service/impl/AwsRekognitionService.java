@@ -1,10 +1,11 @@
-package ch.heigvd.amt.team09.labelizer.service;
+package ch.heigvd.amt.team09.labelizer.service.impl;
 
 import ch.heigvd.amt.team09.labelizer.dto.Label;
+import ch.heigvd.amt.team09.labelizer.service.interfaces.AnalyzerService;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -21,16 +22,16 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@Component
-public class RekognitionService {
-    public static final Consumer<RekognitionOptions.Builder> NO_OPTIONS = b -> {
+@Service
+public class AwsRekognitionService implements AnalyzerService {
+    public static final Consumer<AnalyzerService.Options.Builder> NO_OPTIONS = b -> {
     };
     public static final int DEFAULT_MAX_LABELS = 10;
     public static final float DEFAULT_MIN_CONFIDENCE = 90.0f;
-    private static final Logger LOG = LoggerFactory.getLogger(RekognitionService.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(AwsRekognitionService.class.getName());
     private final RekognitionClient client;
 
-    public RekognitionService() {
+    public AwsRekognitionService() {
         var dotenv = Dotenv.configure()
                 .ignoreIfMissing()
                 .load();
@@ -55,7 +56,8 @@ public class RekognitionService {
         );
     }
 
-    public Label[] execute(String imageUrl, Consumer<RekognitionOptions.Builder> options) throws IOException {
+    @Override
+    public Label[] execute(String imageUrl, Consumer<AnalyzerService.Options.Builder> options) throws IOException {
         var url = new URL(imageUrl);
         byte[] imageBytes;
 
@@ -70,7 +72,8 @@ public class RekognitionService {
         return executeRequest(image, options);
     }
 
-    public Label[] executeFromBase64(String base64, Consumer<RekognitionOptions.Builder> options) {
+    @Override
+    public Label[] executeFromBase64(String base64, Consumer<AnalyzerService.Options.Builder> options) {
         var decoded = Base64.getDecoder().decode(base64);
         var imageBytes = SdkBytes.fromByteArray(decoded);
 
@@ -81,11 +84,11 @@ public class RekognitionService {
         return executeRequest(image, options);
     }
 
-    private Label[] executeRequest(Image image, Consumer<RekognitionOptions.Builder> optionsOperations) {
+    private Label[] executeRequest(Image image, Consumer<AnalyzerService.Options.Builder> optionsOperations) {
         var requestBuilder = DetectLabelsRequest.builder()
                 .image(image);
 
-        var builder = RekognitionOptions.builder();
+        var builder = AnalyzerService.Options.builder();
         optionsOperations.accept(builder);
         var options = builder.build();
 

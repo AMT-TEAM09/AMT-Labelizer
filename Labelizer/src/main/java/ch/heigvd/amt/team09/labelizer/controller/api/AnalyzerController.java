@@ -1,12 +1,12 @@
 package ch.heigvd.amt.team09.labelizer.controller.api;
 
 import ch.heigvd.amt.team09.labelizer.assembler.LabelsModelAssembler;
-import ch.heigvd.amt.team09.labelizer.controller.request.RekognitionRequest;
+import ch.heigvd.amt.team09.labelizer.controller.request.AnalyzerRequest;
 import ch.heigvd.amt.team09.labelizer.dto.LabelsModel;
 import ch.heigvd.amt.team09.labelizer.exception.InvalidBase64Exception;
 import ch.heigvd.amt.team09.labelizer.exception.UnknownException;
 import ch.heigvd.amt.team09.labelizer.exception.UnreachableUrlException;
-import ch.heigvd.amt.team09.labelizer.service.RekognitionService;
+import ch.heigvd.amt.team09.labelizer.service.interfaces.AnalyzerService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +20,13 @@ import java.net.URL;
 import java.util.Base64;
 
 @RestController
-public class RekognitionController {
-    private static final Logger LOG = LoggerFactory.getLogger(RekognitionController.class.getName());
-    private final RekognitionService rekognitionService;
+public class AnalyzerController {
+    private static final Logger LOG = LoggerFactory.getLogger(AnalyzerController.class.getName());
+    private final AnalyzerService rekognitionService;
     private final LabelsModelAssembler assembler;
 
-    public RekognitionController(RekognitionService rekognitionService, LabelsModelAssembler assembler) {
-        this.rekognitionService = rekognitionService;
+    public AnalyzerController(AnalyzerService analyzer, LabelsModelAssembler assembler) {
+        this.rekognitionService = analyzer;
         this.assembler = assembler;
     }
 
@@ -52,7 +52,7 @@ public class RekognitionController {
     }
 
     @PostMapping("/labelize/url")
-    public LabelsModel fromUrl(@Valid @RequestBody RekognitionRequest request) {
+    public LabelsModel fromUrl(@Valid @RequestBody AnalyzerRequest request) {
         var url = request.source();
         if (!isUrlValid(url)) {
             throw new UnreachableUrlException(url);
@@ -72,7 +72,7 @@ public class RekognitionController {
     }
 
     @PostMapping("/labelize/base64")
-    public LabelsModel fromBase64(@Valid @RequestBody RekognitionRequest request) {
+    public LabelsModel fromBase64(@Valid @RequestBody AnalyzerRequest request) {
         var base64 = request.source();
 
         if (!isBase64Valid(base64)) {
