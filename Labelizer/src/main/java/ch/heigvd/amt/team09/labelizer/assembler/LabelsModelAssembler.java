@@ -1,6 +1,7 @@
 package ch.heigvd.amt.team09.labelizer.assembler;
 
 import ch.heigvd.amt.team09.labelizer.controller.api.RekognitionController;
+import ch.heigvd.amt.team09.labelizer.controller.request.RekognitionRequest;
 import ch.heigvd.amt.team09.labelizer.dto.Label;
 import ch.heigvd.amt.team09.labelizer.dto.LabelsModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -20,14 +21,15 @@ public class LabelsModelAssembler implements RepresentationModelAssembler<Label[
     public LabelsModel toModel(Label[] labels) {
         var model = new LabelsModel(labels);
 
-        model.add(linkTo(methodOn(RekognitionController.class).fromUrl("https://example/myimage",
+        model.add(linkTo(methodOn(RekognitionController.class).fromUrl(new RekognitionRequest("https://example/myimage",
                 EXAMPLE_MIN_CONFIDENCE,
                 EXAMPLE_MAX_LABELS
-        )).withSelfRel());
-        model.add(linkTo(methodOn(RekognitionController.class).fromBase64("dGVzdA==",
+        ))).withSelfRel());
+
+        model.add(linkTo(methodOn(RekognitionController.class).fromBase64(new RekognitionRequest("dGVzdA==",
                 EXAMPLE_MIN_CONFIDENCE,
                 EXAMPLE_MAX_LABELS
-        )).withSelfRel());
+        ))).withSelfRel());
 
         return model;
     }

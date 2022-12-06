@@ -1,22 +1,23 @@
 package ch.heigvd.amt.team09.labelizer.controller.api;
 
 import ch.heigvd.amt.team09.labelizer.assembler.LabelsModelAssembler;
+import ch.heigvd.amt.team09.labelizer.controller.request.RekognitionRequest;
 import ch.heigvd.amt.team09.labelizer.dto.LabelsModel;
 import ch.heigvd.amt.team09.labelizer.exception.InvalidBase64Exception;
 import ch.heigvd.amt.team09.labelizer.exception.UnknownException;
 import ch.heigvd.amt.team09.labelizer.exception.UnreachableUrlException;
 import ch.heigvd.amt.team09.labelizer.service.RekognitionService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
-import java.util.Optional;
 
 @RestController
 public class RekognitionController {
@@ -50,10 +51,9 @@ public class RekognitionController {
         }
     }
 
-    @GetMapping("/labelize/url/{url}?minConfidence={minConfidence}&maxLabels={maxLabels}")
-    public LabelsModel fromUrl(@PathVariable String url,
-                               @PathVariable Optional<Float> minConfidence,
-                               @PathVariable Optional<Integer> maxLabels) {
+    @PostMapping("/labelize/url")
+    public LabelsModel fromUrl(@Valid @RequestBody RekognitionRequest request) {
+        var url = request.source();
         if (!isUrlValid(url)) {
             throw new UnreachableUrlException(url);
         }
@@ -61,8 +61,8 @@ public class RekognitionController {
         try {
             return assembler.toModel(
                     rekognitionService.execute(url, builder -> {
-                        minConfidence.ifPresent(builder::minConfidence);
-                        maxLabels.ifPresent(builder::maxLabels);
+                        request.minConfidence().ifPresent(builder::minConfidence);
+                        request.maxLabels().ifPresent(builder::maxLabels);
                     })
             );
         } catch (IOException e) {
@@ -71,18 +71,18 @@ public class RekognitionController {
         }
     }
 
-    @GetMapping("/labelize/base64/{base64}?minConfidence={minConfidence}&maxLabels={maxLabels}")
-    public LabelsModel fromBase64(@PathVariable String base64,
-                                  @PathVariable Optional<Float> minConfidence,
-                                  @PathVariable Optional<Integer> maxLabels) {
+    @PostMapping("/labelize/base64")
+    public LabelsModel fromBase64(@Valid @RequestBody RekognitionRequest request) {
+        var base64 = request.source();
+
         if (!isBase64Valid(base64)) {
             throw new InvalidBase64Exception(base64);
         }
 
         return assembler.toModel(
                 rekognitionService.executeFromBase64(base64, builder -> {
-                    minConfidence.ifPresent(builder::minConfidence);
-                    maxLabels.ifPresent(builder::maxLabels);
+                    request.minConfidence().ifPresent(builder::minConfidence);
+                    request.maxLabels().ifPresent(builder::maxLabels);
                 })
         );
     }
