@@ -23,15 +23,13 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 @Service
-public class AwsRekognitionService implements AnalyzerService {
+public class AwsAnalyzerService implements AnalyzerService {
     public static final Consumer<AnalyzerService.Options.Builder> NO_OPTIONS = b -> {
     };
-    public static final int DEFAULT_MAX_LABELS = 10;
-    public static final float DEFAULT_MIN_CONFIDENCE = 90.0f;
-    private static final Logger LOG = LoggerFactory.getLogger(AwsRekognitionService.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(AwsAnalyzerService.class.getName());
     private final RekognitionClient client;
 
-    public AwsRekognitionService() {
+    public AwsAnalyzerService() {
         var dotenv = Dotenv.configure()
                 .ignoreIfMissing()
                 .load();
@@ -92,8 +90,8 @@ public class AwsRekognitionService implements AnalyzerService {
         optionsOperations.accept(builder);
         var options = builder.build();
 
-        requestBuilder.minConfidence(options.minConfidence().orElse(DEFAULT_MIN_CONFIDENCE));
-        requestBuilder.maxLabels(options.maxLabels().orElse(DEFAULT_MAX_LABELS));
+        requestBuilder.minConfidence(options.minConfidence());
+        requestBuilder.maxLabels(options.maxLabels());
 
         LOG.info("Sending request to AWS Rekognition");
         var start = System.currentTimeMillis();

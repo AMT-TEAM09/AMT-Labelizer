@@ -1,6 +1,6 @@
 package ch.heigvd.amt.team09.labelizer.service;
 
-import ch.heigvd.amt.team09.labelizer.service.impl.AwsRekognitionService;
+import ch.heigvd.amt.team09.labelizer.service.impl.AwsAnalyzerService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -16,11 +16,11 @@ import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AwsRekognitionServiceTest {
+class AwsAnalyzerServiceTest {
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/6/6b/American_Beaver.jpg";
-    private static AwsRekognitionService rekognitionService;
+    private static AwsAnalyzerService rekognitionService;
 
     private static String getImageAsBase64() throws IOException {
         var fileBytes = Files.readAllBytes(IMAGE_FILE);
@@ -39,7 +39,7 @@ class AwsRekognitionServiceTest {
 
     @BeforeAll
     static void setUp() {
-        rekognitionService = new AwsRekognitionService();
+        rekognitionService = new AwsAnalyzerService();
     }
 
     @Test
@@ -49,7 +49,7 @@ class AwsRekognitionServiceTest {
         assertFalse(isUrlValid(unreachableUrl));
 
         // then
-        assertThrows(IOException.class, () -> rekognitionService.execute(unreachableUrl, AwsRekognitionService.NO_OPTIONS));
+        assertThrows(IOException.class, () -> rekognitionService.execute(unreachableUrl, AwsAnalyzerService.NO_OPTIONS));
     }
 
     @Test
@@ -59,7 +59,7 @@ class AwsRekognitionServiceTest {
         assertFalse(isUrlValid(malformedUrl));
 
         // then
-        assertThrows(MalformedURLException.class, () -> rekognitionService.execute(malformedUrl, AwsRekognitionService.NO_OPTIONS));
+        assertThrows(MalformedURLException.class, () -> rekognitionService.execute(malformedUrl, AwsAnalyzerService.NO_OPTIONS));
     }
 
     @Test
@@ -71,10 +71,11 @@ class AwsRekognitionServiceTest {
         assertTrue(isUrlValid(imageUrl));
 
         // when
-        var labels = assertDoesNotThrow(() -> rekognitionService.execute(imageUrl, AwsRekognitionService.NO_OPTIONS));
+        var labels = assertDoesNotThrow(() -> rekognitionService.execute(imageUrl, AwsAnalyzerService.NO_OPTIONS));
 
         // then
-        assertTrue(labels.length > 0);
+        assertTrue(labels.length > 0 && labels.length <= AwsAnalyzerService.DEFAULT_MAX_LABELS);
+        assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= AwsAnalyzerService.DEFAULT_MIN_CONFIDENCE));
         assertTrue(Arrays.stream(labels).anyMatch(l -> l.name().equals(expectedLabelName)));
     }
 
@@ -92,7 +93,7 @@ class AwsRekognitionServiceTest {
         );
 
         // then
-        assertTrue(labels.length > 0);
+        assertTrue(labels.length > 0 && labels.length <= AwsAnalyzerService.DEFAULT_MAX_LABELS);
         assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= minConfidence));
     }
 
@@ -109,6 +110,7 @@ class AwsRekognitionServiceTest {
 
         // then
         assertEquals(maxLabels, labels.length);
+        assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= AwsAnalyzerService.DEFAULT_MIN_CONFIDENCE));
     }
 
     @Test
@@ -136,35 +138,36 @@ class AwsRekognitionServiceTest {
     @Test
     void executeFromBase64_noOptions_imageAnalyzed() {
         // given
-        var imageString = assertDoesNotThrow(AwsRekognitionServiceTest::getImageAsBase64);
+        var imageString = assertDoesNotThrow(AwsAnalyzerServiceTest::getImageAsBase64);
         var expectedLabelName = "Phone";
 
         // when
-        var labels = rekognitionService.executeFromBase64(imageString, AwsRekognitionService.NO_OPTIONS);
+        var labels = rekognitionService.executeFromBase64(imageString, AwsAnalyzerService.NO_OPTIONS);
 
         // then
-        assertTrue(labels.length > 0);
+        assertTrue(labels.length > 0 && labels.length <= AwsAnalyzerService.DEFAULT_MAX_LABELS);
+        assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= AwsAnalyzerService.DEFAULT_MIN_CONFIDENCE));
         assertTrue(Arrays.stream(labels).anyMatch(l -> l.name().equals(expectedLabelName)));
     }
 
     @Test
     void executeFromBase64_withMinConfidence70_imageAnalyzedWithOptions() {
         // given
-        var imageString = assertDoesNotThrow(AwsRekognitionServiceTest::getImageAsBase64);
+        var imageString = assertDoesNotThrow(AwsAnalyzerServiceTest::getImageAsBase64);
         var minConfidence = 70;
 
         // when
         var labels = rekognitionService.executeFromBase64(imageString, options -> options.minConfidence(minConfidence));
 
         // then
-        assertTrue(labels.length > 0);
+        assertTrue(labels.length > 0 && labels.length <= AwsAnalyzerService.DEFAULT_MAX_LABELS);
         assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= minConfidence));
     }
 
     @Test
     void executeFromBase64_withMaxLabels6_imageAnalyzedWithOptions() {
         // given
-        var imageString = assertDoesNotThrow(AwsRekognitionServiceTest::getImageAsBase64);
+        var imageString = assertDoesNotThrow(AwsAnalyzerServiceTest::getImageAsBase64);
         var maxLabels = 6;
 
         // when
@@ -172,12 +175,13 @@ class AwsRekognitionServiceTest {
 
         // then
         assertEquals(maxLabels, labels.length);
+        assertTrue(Arrays.stream(labels).allMatch(l -> l.confidence() >= AwsAnalyzerService.DEFAULT_MIN_CONFIDENCE));
     }
 
     @Test
     void executeFromBase64_withMinConfidence50AndMaxLabels30_imageAnalyzedWithOptions() {
         // given
-        var imageString = assertDoesNotThrow(AwsRekognitionServiceTest::getImageAsBase64);
+        var imageString = assertDoesNotThrow(AwsAnalyzerServiceTest::getImageAsBase64);
         var minConfidence = 50;
         var maxLabels = 30;
 
@@ -198,6 +202,6 @@ class AwsRekognitionServiceTest {
         var imageString = "invalid";
 
         // then
-        assertThrows(Exception.class, () -> rekognitionService.executeFromBase64(imageString, AwsRekognitionService.NO_OPTIONS));
+        assertThrows(Exception.class, () -> rekognitionService.executeFromBase64(imageString, AwsAnalyzerService.NO_OPTIONS));
     }
 }
