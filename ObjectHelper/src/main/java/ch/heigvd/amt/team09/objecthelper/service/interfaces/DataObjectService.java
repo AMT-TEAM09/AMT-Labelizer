@@ -2,14 +2,12 @@ package ch.heigvd.amt.team09.objecthelper.service.interfaces;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.time.Duration;
 
 public interface DataObjectService {
     Duration DEFAULT_URL_EXPIRATION_TIME = Duration.ofSeconds(90);
 
-    void create(String objectName, Path filePath) throws NoSuchFileException;
+    void create(String objectName, byte[] content) throws ObjectAlreadyExistsException;
 
     boolean exists(String objectName);
 
@@ -17,7 +15,7 @@ public interface DataObjectService {
 
     void delete();
 
-    void delete(String objectName);
+    void delete(String objectName) throws ObjectNotFoundException, ObjectNotEmptyException;
 
     URL publish(String objectName, Duration urlDuration) throws ObjectNotFoundException;
 

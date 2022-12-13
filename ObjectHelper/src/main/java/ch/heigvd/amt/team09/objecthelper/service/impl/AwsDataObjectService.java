@@ -17,9 +17,6 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
@@ -72,20 +69,20 @@ public class AwsDataObjectService implements DataObjectService {
         );
     }
 
-    public void create(String objectName, Path filePath) throws NoSuchFileException {
-        if (Files.notExists(filePath)) {
-            throw new NoSuchFileException(filePath.toString());
-        }
-
+    public void create(String objectName, byte[] content) throws ObjectAlreadyExistsException {
         if (!bucketExists()) {
             createBucket();
+        }
+
+        if (exists(objectName)) {
+            throw new ObjectAlreadyExistsException(objectName);
         }
 
         var request = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectName)
                 .build();
-        client.putObject(request, RequestBody.fromFile(filePath));
+        client.putObject(request, RequestBody.fromBytes(content));
     }
 
     public boolean exists() {
@@ -103,9 +100,9 @@ public class AwsDataObjectService implements DataObjectService {
         deleteBucket();
     }
 
-    public void delete(String objectName) {
+    public void delete(String objectName) throws ObjectNotFoundException {
         if (!objectExists(objectName))
-            return;
+            throw new ObjectNotFoundException(objectName);
 
         var request = DeleteObjectRequest.builder()
                 .bucket(bucketName)
@@ -184,5 +181,14 @@ public class AwsDataObjectService implements DataObjectService {
             LOG.info("Object not found {}: {}", objectName, e.getMessage());
             return false;
         }
+    }
+
+    private boolean isFolderOrEmpty(String folderName) {
+        var request = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(folderName)
+                .build();
+        var response = client.listObjectsV2(request);
+        return response.contents().isEmpty();
     }
 }

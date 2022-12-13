@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -21,16 +21,22 @@ class AwsDataObjectServiceTest {
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String TEST_OBJECT_NAME = "test-object";
     private static AwsDataObjectService dataObjectService;
+    private static byte[] imageContent;
 
     @BeforeAll
     static void setUp() {
         dataObjectService = new AwsDataObjectService();
+        try {
+            imageContent = Files.readAllBytes(IMAGE_FILE);
+        } catch (IOException e) {
+            fail(e);
+        }
     }
 
     @AfterEach
     void tearDown() {
         if (dataObjectService.exists(TEST_OBJECT_NAME)) {
-            dataObjectService.delete(TEST_OBJECT_NAME);
+            assertDoesNotThrow(() -> dataObjectService.delete(TEST_OBJECT_NAME));
         }
     }
 
@@ -61,7 +67,7 @@ class AwsDataObjectServiceTest {
         // given
         assertTrue(dataObjectService.exists());
         assertFalse(dataObjectService.exists(TEST_OBJECT_NAME));
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
 
         // when
         var exists = dataObjectService.exists(TEST_OBJECT_NAME);
@@ -90,7 +96,7 @@ class AwsDataObjectServiceTest {
         assertFalse(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
 
         // then
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
@@ -100,10 +106,11 @@ class AwsDataObjectServiceTest {
     void create_rootObjectExistsObjectAlreadyExists_exceptionThrown() {
         // given
         assertTrue(dataObjectService.exists());
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
-        Executable func = () -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE);
+        Executable func = () -> dataObjectService.create(TEST_OBJECT_NAME, imageContent);
 
         // then
         assertThrows(DataObjectService.ObjectAlreadyExistsException.class, func);
@@ -117,7 +124,7 @@ class AwsDataObjectServiceTest {
         assertFalse(dataObjectService.exists());
 
         // when
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
 
         // then
         assertTrue(dataObjectService.exists());
@@ -125,38 +132,20 @@ class AwsDataObjectServiceTest {
     }
 
     @Test
-    void create_newObjectWithNonExistingFile_errorThrown() {
-        // given
-        var invalidImagePath = Path.of(IMAGE_FILE + "1");
-        assertFalse(Files.exists(invalidImagePath));
-
-        // when
-        Executable func = () -> dataObjectService.create(TEST_OBJECT_NAME, invalidImagePath);
-
-        // then
-        assertThrows(NoSuchFileException.class, func);
-    }
-
-    @Test
     void get_objectExists_fileDownloaded() {
         // given
-        String fileContent = assertDoesNotThrow(() -> {
-            try (var stream = Files.newInputStream(IMAGE_FILE)) {
-                return new String(stream.readAllBytes());
-            }
-        });
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
-        String downloadedContent = assertDoesNotThrow(() -> {
+        var downloadedContent = assertDoesNotThrow(() -> {
             try (var downloaded = dataObjectService.get(TEST_OBJECT_NAME)) {
-                return new String(downloaded.readAllBytes());
+                return downloaded.readAllBytes();
             }
         });
 
         // then
-        assertEquals(fileContent, downloadedContent);
+        assertArrayEquals(imageContent, downloadedContent);
     }
 
     @Test
@@ -174,7 +163,7 @@ class AwsDataObjectServiceTest {
     @Test
     void publish_objectExists_urlIsReachable() {
         // given
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
@@ -205,7 +194,7 @@ class AwsDataObjectServiceTest {
     void publish_negativeUrlDuration_exceptionThrown() {
         // given
         var urlDuration = Duration.ofSeconds(-1);
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
@@ -219,7 +208,7 @@ class AwsDataObjectServiceTest {
     void publish_zeroUrlDuration_errorThrown() {
         // given
         var urlDuration = Duration.ZERO;
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
@@ -232,11 +221,11 @@ class AwsDataObjectServiceTest {
     @Test
     void delete_singleObjectExists_objectDeleted() {
         // given
-        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, IMAGE_FILE));
+        assertDoesNotThrow(() -> dataObjectService.create(TEST_OBJECT_NAME, imageContent));
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
-        dataObjectService.delete(TEST_OBJECT_NAME);
+        assertDoesNotThrow(() -> dataObjectService.delete(TEST_OBJECT_NAME));
 
         // then
         assertFalse(dataObjectService.exists(TEST_OBJECT_NAME));
@@ -261,8 +250,8 @@ class AwsDataObjectServiceTest {
 //        var folderName = "folder/";
 //        var testObjectName = folderName + "/" + TEST_OBJECT_NAME;
 //        var testObjectName2 = folderName + "/" + TEST_OBJECT_NAME + "2";
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, IMAGE_FILE));
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, IMAGE_FILE));
+//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
+//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, imageContent));
 //        assertTrue(dataObjectService.exists(testObjectName));
 //        assertTrue(dataObjectService.exists(testObjectName2));
 //        assertTrue(dataObjectService.exists(folderName));
@@ -284,8 +273,8 @@ class AwsDataObjectServiceTest {
 //        var folderName = "folder/";
 //        var testObjectName = folderName + "/" + TEST_OBJECT_NAME;
 //        var testObjectName2 = folderName + "/" + TEST_OBJECT_NAME + "2";
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, IMAGE_FILE));
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, IMAGE_FILE));
+//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
+//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, imageContent));
 //        assertTrue(dataObjectService.exists(testObjectName));
 //        assertTrue(dataObjectService.exists(testObjectName2));
 //        assertTrue(dataObjectService.exists(folderName));
@@ -305,7 +294,7 @@ class AwsDataObjectServiceTest {
 //    void delete_rootObjectNotEmptyWithoutRecursiveOption_exceptionThrown() {
 //        // given
 //        var testObjectName = TEST_OBJECT_NAME;
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, IMAGE_FILE));
+//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
 //        assertTrue(dataObjectService.exists(testObjectName));
 //
 //        // when
@@ -322,7 +311,7 @@ class AwsDataObjectServiceTest {
 //    void delete_rootObjectNotEmptyWithRecursiveOption_rootDeleted() {
 //        // given
 //        var testObjectName = TEST_OBJECT_NAME;
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, IMAGE_FILE));
+//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
 //        assertTrue(dataObjectService.exists(testObjectName));
 //
 //        // when
