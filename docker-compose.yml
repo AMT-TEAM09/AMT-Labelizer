@@ -1,13 +1,29 @@
-services :
+services:
   labelizer:
-    container_name: Labelizer
+    container_name: labelizer
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
 
     build:
       context: ./Labelizer
-      dockerfile : Dockerfile
-
-    env_file:
-      - .env
+      dockerfile: Dockerfile
 
     ports:
-      - 8080:5000
+      - 8080:8080
+
+  data-object:
+    container_name: data-object
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+
+    build:
+      context: ./DataObject
+      dockerfile: Dockerfile
+
+    ports:
+      - 8081:8080
