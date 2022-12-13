@@ -91,7 +91,7 @@ public class AwsDataObjectService implements DataObjectService {
     }
 
     public boolean exists(String objectName) {
-        return objectExists(objectName) || folderExists(objectName);
+        return exists() && (objectExists(objectName) || folderExists(objectName));
     }
 
     public void delete(boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException {
@@ -103,6 +103,10 @@ public class AwsDataObjectService implements DataObjectService {
 
         if (!recursive && !objects.isEmpty()) {
             throw new ObjectNotEmptyException(bucketName);
+        }
+
+        for (var object : objects) {
+            delete(object.key());
         }
 
         deleteBucket();
