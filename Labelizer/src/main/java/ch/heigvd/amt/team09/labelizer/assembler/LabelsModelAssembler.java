@@ -19,10 +19,10 @@ public class LabelsModelAssembler implements RepresentationModelAssembler<Label[
         var model = new LabelsModel(labels);
 
         model.add(linkTo(methodOn(AnalyzerController.class).fromUrl(
-                new AnalyzerRequest("", Optional.empty(), Optional.empty())
+                new AnalyzerRequest("{url to image}", Optional.empty(), Optional.empty())
         )).withSelfRel());
         model.add(linkTo(methodOn(AnalyzerController.class).fromBase64(
-                new AnalyzerRequest("", Optional.empty(), Optional.empty())
+                new AnalyzerRequest("{image in base64}", Optional.empty(), Optional.empty())
         )).withSelfRel());
 
         return model;
