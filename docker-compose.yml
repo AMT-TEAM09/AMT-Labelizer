@@ -1,0 +1,13 @@
+services :
+  labelizer:
+    container_name: Labelizer
+
+    build:
+      context: ./Labelizer
+      dockerfile : Dockerfile
+
+    env_file:
+      - .env
+
+    ports:
+      - 8080:5000
