@@ -18,6 +18,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -74,7 +75,7 @@ public class AwsDataObjectService implements DataObjectService {
             createBucket();
         }
 
-        if (exists(objectName)) {
+        if (objectExists(objectName)) {
             throw new ObjectAlreadyExistsException(objectName);
         }
 
@@ -90,25 +91,29 @@ public class AwsDataObjectService implements DataObjectService {
     }
 
     public boolean exists(String objectName) {
-        return objectExists(objectName);
+        return objectExists(objectName) || folderExists(objectName);
     }
 
-    public void delete() {
-        if (!bucketExists())
-            return;
+    public void delete(boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException {
+        if (!bucketExists()) {
+            throw new ObjectNotFoundException(bucketName);
+        }
+
+        var objects = listObjectsInBucket();
+
+        if (!recursive && !objects.isEmpty()) {
+            throw new ObjectNotEmptyException(bucketName);
+        }
 
         deleteBucket();
     }
 
-    public void delete(String objectName) throws ObjectNotFoundException {
-        if (!objectExists(objectName))
-            throw new ObjectNotFoundException(objectName);
-
-        var request = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(objectName)
-                .build();
-        client.deleteObject(request);
+    public void delete(String objectName, boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException {
+        if (objectExists(objectName)) {
+            deleteObject(objectName);
+            return;
+        }
+        deleteFolder(objectName, recursive);
     }
 
     public URL publish(String objectName, Duration urlDuration) throws ObjectNotFoundException {
@@ -183,12 +188,46 @@ public class AwsDataObjectService implements DataObjectService {
         }
     }
 
-    private boolean isFolderOrEmpty(String folderName) {
+    private boolean folderExists(String folderName) {
+        return !listObjects(folderName).isEmpty();
+    }
+
+    private List<S3Object> listObjectsInBucket() {
+        return listObjects("");
+    }
+
+    private List<S3Object> listObjects(String folderName) {
         var request = ListObjectsV2Request.builder()
                 .bucket(bucketName)
                 .prefix(folderName)
                 .build();
         var response = client.listObjectsV2(request);
-        return response.contents().isEmpty();
+        return response.contents();
+    }
+
+    private void deleteObject(String objectName) throws ObjectNotFoundException {
+        if (!objectExists(objectName))
+            throw new ObjectNotFoundException(objectName);
+
+        var request = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectName)
+                .build();
+        client.deleteObject(request);
+    }
+
+    private void deleteFolder(String folderName, boolean recursive) throws ObjectNotFoundException,
+            ObjectNotEmptyException {
+        var objects = listObjects(folderName);
+
+        if (objects.isEmpty()) // S'il est vide, c'est qu'il n'existe pas
+            throw new ObjectNotFoundException(folderName);
+
+        if (!recursive)
+            throw new ObjectNotEmptyException(folderName);
+
+        for (var object : objects) {
+            deleteObject(object.key());
+        }
     }
 }

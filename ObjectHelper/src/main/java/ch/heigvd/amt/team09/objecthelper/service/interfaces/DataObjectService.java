@@ -13,9 +13,17 @@ public interface DataObjectService {
 
     boolean exists();
 
-    void delete();
+    default void delete() throws ObjectNotFoundException, ObjectNotEmptyException {
+        delete(false);
+    }
 
-    void delete(String objectName) throws ObjectNotFoundException, ObjectNotEmptyException;
+    void delete(boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException;
+
+    default void delete(String objectName) throws ObjectNotFoundException, ObjectNotEmptyException {
+        delete(objectName, false);
+    }
+
+    void delete(String objectName, boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException;
 
     URL publish(String objectName, Duration urlDuration) throws ObjectNotFoundException;
 

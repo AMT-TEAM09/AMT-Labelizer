@@ -20,6 +20,7 @@ class AwsDataObjectServiceTest {
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String TEST_OBJECT_NAME = "test-object";
+    private static final String TEST_FOLDER = "test-folder";
     private static AwsDataObjectService dataObjectService;
     private static byte[] imageContent;
 
@@ -37,6 +38,10 @@ class AwsDataObjectServiceTest {
     void tearDown() {
         if (dataObjectService.exists(TEST_OBJECT_NAME)) {
             assertDoesNotThrow(() -> dataObjectService.delete(TEST_OBJECT_NAME));
+        }
+
+        if (dataObjectService.exists(TEST_FOLDER)) {
+            assertDoesNotThrow(() -> dataObjectService.delete(TEST_FOLDER, true));
         }
     }
 
@@ -120,7 +125,7 @@ class AwsDataObjectServiceTest {
     @Test
     void create_rootObjectNotExistsNewObject_objectCreated() {
         // given
-        dataObjectService.delete();
+        assertDoesNotThrow(() -> dataObjectService.delete());
         assertFalse(dataObjectService.exists());
 
         // when
@@ -225,7 +230,7 @@ class AwsDataObjectServiceTest {
         assertTrue(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
-        assertDoesNotThrow(() -> dataObjectService.delete(TEST_OBJECT_NAME));
+        assertDoesNotThrow(() -> dataObjectService.delete(TEST_OBJECT_NAME, false));
 
         // then
         assertFalse(dataObjectService.exists(TEST_OBJECT_NAME));
@@ -238,87 +243,81 @@ class AwsDataObjectServiceTest {
         assertFalse(dataObjectService.exists(TEST_OBJECT_NAME));
 
         // when
-        Executable func = () -> dataObjectService.delete(TEST_OBJECT_NAME);
+        Executable func = () -> dataObjectService.delete(TEST_OBJECT_NAME, false);
 
         // then
         assertThrows(DataObjectService.ObjectNotFoundException.class, func);
     }
 
-//    @Test
-//    void delete_folderObjectExistsWithoutRecursiveOption_exceptionThrown() {
-//        // given
-//        var folderName = "folder/";
-//        var testObjectName = folderName + "/" + TEST_OBJECT_NAME;
-//        var testObjectName2 = folderName + "/" + TEST_OBJECT_NAME + "2";
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, imageContent));
-//        assertTrue(dataObjectService.exists(testObjectName));
-//        assertTrue(dataObjectService.exists(testObjectName2));
-//        assertTrue(dataObjectService.exists(folderName));
-//
-//        // when
-//        // TODO recursive = false
-//        Executable func = () -> dataObjectService.delete(folderName);
-//
-//        // then
-//        assertThrows(DataObjectService.ObjectNotEmptyException.class, func);
-//        assertTrue(dataObjectService.exists(testObjectName));
-//        assertTrue(dataObjectService.exists(testObjectName2));
-//        assertTrue(dataObjectService.exists(folderName));
-//    }
-//
-//    @Test
-//    void delete_folderObjectExistsWithRecursiveOption_folderDeleted() {
-//        // given
-//        var folderName = "folder/";
-//        var testObjectName = folderName + "/" + TEST_OBJECT_NAME;
-//        var testObjectName2 = folderName + "/" + TEST_OBJECT_NAME + "2";
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, imageContent));
-//        assertTrue(dataObjectService.exists(testObjectName));
-//        assertTrue(dataObjectService.exists(testObjectName2));
-//        assertTrue(dataObjectService.exists(folderName));
-//
-//        // when
-//        // TODO recursive = true
-//        assertDoesNotThrow(() -> dataObjectService.delete(folderName));
-//
-//        // then
-//        assertFalse(dataObjectService.exists(testObjectName));
-//        assertFalse(dataObjectService.exists(testObjectName2));
-//        assertFalse(dataObjectService.exists(folderName));
-//    }
-//
-//    @Disabled("only on release")
-//    @Test
-//    void delete_rootObjectNotEmptyWithoutRecursiveOption_exceptionThrown() {
-//        // given
-//        var testObjectName = TEST_OBJECT_NAME;
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
-//        assertTrue(dataObjectService.exists(testObjectName));
-//
-//        // when
-//        // TODO recursive = false
-//        Executable func = () -> dataObjectService.delete();
-//
-//        // then
-//        assertThrows(DataObjectService.ObjectNotEmptyException.class, func);
-//        assertTrue(dataObjectService.exists(testObjectName));
-//    }
-//
-//    @Disabled("only on release")
-//    @Test
-//    void delete_rootObjectNotEmptyWithRecursiveOption_rootDeleted() {
-//        // given
-//        var testObjectName = TEST_OBJECT_NAME;
-//        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
-//        assertTrue(dataObjectService.exists(testObjectName));
-//
-//        // when
-//        // TODO recursive = true
-//        assertDoesNotThrow(() -> dataObjectService.delete());
-//
-//        // then
-//        assertFalse(dataObjectService.exists(testObjectName));
-//    }
+    @Test
+    void delete_folderObjectExistsWithoutRecursiveOption_exceptionThrown() {
+        // given
+        var testObjectName = TEST_FOLDER + "/" + TEST_OBJECT_NAME;
+        var testObjectName2 = TEST_FOLDER + "/" + TEST_OBJECT_NAME + "2";
+        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
+        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, imageContent));
+        assertTrue(dataObjectService.exists(testObjectName));
+        assertTrue(dataObjectService.exists(testObjectName2));
+        assertTrue(dataObjectService.exists(TEST_FOLDER));
+
+        // when
+        Executable func = () -> dataObjectService.delete(TEST_FOLDER, false);
+
+        // then
+        assertThrows(DataObjectService.ObjectNotEmptyException.class, func);
+        assertTrue(dataObjectService.exists(testObjectName));
+        assertTrue(dataObjectService.exists(testObjectName2));
+        assertTrue(dataObjectService.exists(TEST_FOLDER));
+    }
+
+    @Test
+    void delete_folderObjectExistsWithRecursiveOption_folderDeleted() {
+        // given
+        var testObjectName = TEST_FOLDER + "/" + TEST_OBJECT_NAME;
+        var testObjectName2 = TEST_FOLDER + "/" + TEST_OBJECT_NAME + "2";
+        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
+        assertDoesNotThrow(() -> dataObjectService.create(testObjectName2, imageContent));
+        assertTrue(dataObjectService.exists(testObjectName));
+        assertTrue(dataObjectService.exists(testObjectName2));
+        assertTrue(dataObjectService.exists(TEST_FOLDER));
+
+        // when
+        assertDoesNotThrow(() -> dataObjectService.delete(TEST_FOLDER, true));
+
+        // then
+        assertFalse(dataObjectService.exists(testObjectName));
+        assertFalse(dataObjectService.exists(testObjectName2));
+        assertFalse(dataObjectService.exists(TEST_FOLDER));
+    }
+
+    @Disabled("only on release")
+    @Test
+    void delete_rootObjectNotEmptyWithoutRecursiveOption_exceptionThrown() {
+        // given
+        var testObjectName = TEST_OBJECT_NAME;
+        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
+        assertTrue(dataObjectService.exists(testObjectName));
+
+        // when
+        Executable func = () -> dataObjectService.delete(false);
+
+        // then
+        assertThrows(DataObjectService.ObjectNotEmptyException.class, func);
+        assertTrue(dataObjectService.exists(testObjectName));
+    }
+
+    @Disabled("only on release")
+    @Test
+    void delete_rootObjectNotEmptyWithRecursiveOption_rootDeleted() {
+        // given
+        var testObjectName = TEST_OBJECT_NAME;
+        assertDoesNotThrow(() -> dataObjectService.create(testObjectName, imageContent));
+        assertTrue(dataObjectService.exists(testObjectName));
+
+        // when
+        assertDoesNotThrow(() -> dataObjectService.delete(true));
+
+        // then
+        assertFalse(dataObjectService.exists(testObjectName));
+    }
 }
