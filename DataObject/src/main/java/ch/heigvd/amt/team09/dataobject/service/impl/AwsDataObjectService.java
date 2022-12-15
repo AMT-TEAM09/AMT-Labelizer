@@ -113,6 +113,10 @@ public class AwsDataObjectService implements DataObjectService {
     }
 
     public void delete(String objectName, boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException {
+        if (!bucketExists()) {
+            throw new ObjectNotFoundException(bucketName);
+        }
+
         if (objectExists(objectName)) {
             deleteObject(objectName);
             return;
@@ -123,6 +127,10 @@ public class AwsDataObjectService implements DataObjectService {
     public URL publish(String objectName, Duration urlDuration) throws ObjectNotFoundException {
         if (urlDuration.isNegative() || urlDuration.isZero())
             throw new IllegalArgumentException("Duration must be positive");
+
+        if (!bucketExists()) {
+            throw new ObjectNotFoundException(bucketName);
+        }
 
         if (!objectExists(objectName)) {
             throw new ObjectNotFoundException(objectName);
@@ -141,6 +149,10 @@ public class AwsDataObjectService implements DataObjectService {
     }
 
     public InputStream get(String objectName) throws ObjectNotFoundException {
+        if (!bucketExists()) {
+            throw new ObjectNotFoundException(bucketName);
+        }
+
         if (!objectExists(objectName))
             throw new ObjectNotFoundException(objectName);
 
@@ -220,8 +232,8 @@ public class AwsDataObjectService implements DataObjectService {
         client.deleteObject(request);
     }
 
-    private void deleteFolder(String folderName, boolean recursive) throws ObjectNotFoundException,
-            ObjectNotEmptyException {
+    private void deleteFolder(String folderName, boolean recursive)
+            throws ObjectNotFoundException, ObjectNotEmptyException {
         var objects = listObjects(folderName);
 
         if (objects.isEmpty()) // S'il est vide, c'est qu'il n'existe pas

@@ -25,17 +25,14 @@ class AwsDataObjectServiceTest {
     private static byte[] imageContent;
 
     @BeforeAll
-    static void setUp() {
+    static void setUp() throws IOException {
         dataObjectService = new AwsDataObjectService();
-        try {
-            imageContent = Files.readAllBytes(IMAGE_FILE);
-        } catch (IOException e) {
-            fail(e);
-        }
+        imageContent = Files.readAllBytes(IMAGE_FILE);
     }
 
     @AfterEach
     void tearDown() {
+        //TODO voir comment gérer les exceptions
         if (dataObjectService.exists(TEST_OBJECT_NAME)) {
             assertDoesNotThrow(() -> dataObjectService.delete(TEST_OBJECT_NAME));
         }
