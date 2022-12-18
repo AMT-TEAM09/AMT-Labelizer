@@ -36,7 +36,7 @@ public class AnalyzerController {
             var responseCode = huc.getResponseCode();
             return responseCode == 200;
         } catch (IOException e) {
-            LOG.error("Requested URL '{}' is not reachable", url, e);
+            LOG.error("Requested URL is not reachable", e);
             return false;
         }
     }
@@ -46,7 +46,7 @@ public class AnalyzerController {
             Base64.getDecoder().decode(base64);
             return true;
         } catch (IllegalArgumentException e) {
-            LOG.error("Requested base64 '{}' is not valid", base64, e);
+            LOG.error("Requested base64 is not valid", e);
             return false;
         }
     }
@@ -66,7 +66,7 @@ public class AnalyzerController {
                     })
             );
         } catch (IOException e) {
-            LOG.error("An error occurred while analyzing {}", url, e);
+            LOG.error("An error occurred while analyzing", e);
             throw new UnknownException();
         }
     }

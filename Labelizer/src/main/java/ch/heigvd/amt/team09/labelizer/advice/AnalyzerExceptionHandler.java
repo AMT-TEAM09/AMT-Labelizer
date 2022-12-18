@@ -43,14 +43,14 @@ public class AnalyzerExceptionHandler {
     @ResponseBody
     @ExceptionHandler(UnrecognizedPropertyException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String handleUnknownProperty(UnrecognizedPropertyException e) {
+    String unknownPropertyHandler(UnrecognizedPropertyException e) {
         return String.format("Unknown property '%s', excepting %s", e.getPropertyName(), e.getKnownPropertyIds());
     }
 
     @ResponseBody
     @ExceptionHandler(JsonParseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String handleMalformedJson(JsonParseException e) {
+    String malformedJsonHandler(JsonParseException e) {
         return String.format("Malformed JSON: %s at line %d, column %d",
                 e.getOriginalMessage(),
                 e.getLocation().getLineNr(),
@@ -61,7 +61,7 @@ public class AnalyzerExceptionHandler {
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String handleValidationExceptions(MethodArgumentNotValidException e) {
+    String validationExceptionsHandler(MethodArgumentNotValidException e) {
         return e.getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining("\r\n"));
@@ -70,7 +70,7 @@ public class AnalyzerExceptionHandler {
     @ResponseBody
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String handleUnreadableHttp(HttpMessageNotReadableException e) {
+    String unreadableHttpHandler(HttpMessageNotReadableException e) {
         return switch (e.getCause()) {
             case InvalidFormatException ex -> handleFormatException(ex);
             default -> String.format("Unknown error: %s", e.getMessage());
