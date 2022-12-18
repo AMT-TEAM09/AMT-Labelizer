@@ -1,5 +1,9 @@
 package ch.heigvd.amt.team09.dataobject.controller.api;
 
+import ch.heigvd.amt.team09.dataobject.assembler.ResponseModelAssembler;
+import ch.heigvd.amt.team09.dataobject.dto.DataObject;
+import ch.heigvd.amt.team09.dataobject.dto.DataObjectResponseModel;
+import ch.heigvd.amt.team09.dataobject.dto.DataObjectWithUrl;
 import ch.heigvd.amt.team09.dataobject.exception.DeleteFailedException;
 import ch.heigvd.amt.team09.dataobject.exception.FileUploadException;
 import ch.heigvd.amt.team09.dataobject.exception.ObjectAlreadyExistsException;
@@ -25,13 +29,15 @@ import java.util.Optional;
 public class DataObjectController {
     private static final Logger LOG = LoggerFactory.getLogger(DataObjectController.class.getName());
     private final DataObjectService dataObjectService;
+    private final ResponseModelAssembler assembler;
 
-    public DataObjectController(DataObjectService dataObjectService) {
+    public DataObjectController(DataObjectService dataObjectService, ResponseModelAssembler assembler) {
         this.dataObjectService = dataObjectService;
+        this.assembler = assembler;
     }
 
-    @PostMapping(value = "/data-object", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Object> upload(@Valid @NotBlank String objectName, @Valid @NotNull MultipartFile file) {
+    @PostMapping(value = "v1/data-object", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public DataObjectResponseModel upload(@Valid @NotBlank String objectName, @Valid @NotNull MultipartFile file) {
         byte[] content;
         try {
             content = file.getBytes();
@@ -46,18 +52,16 @@ public class DataObjectController {
 
         try {
             dataObjectService.create(objectName, content);
-            return ResponseEntity.ok().build();
+            return assembler.toModel(new DataObject(objectName))
+                    .withSelf(ResponseModelAssembler.LINK_UPLOAD);
         } catch (DataObjectService.ObjectAlreadyExistsException e) {
-            LOG.error("Object already exists", e);
+            throw new IllegalStateException(e);
         }
-
-        // Ne dois jamais se produire
-        return ResponseEntity.internalServerError().build();
     }
 
-    @GetMapping("/data-object/{objectName}")
-    public ResponseEntity<String> publish(@PathVariable String objectName,
-                                          @RequestParam @Valid Optional<@Positive Integer> duration) {
+    @GetMapping("v1/data-object/{objectName}")
+    public DataObjectResponseModel publish(@PathVariable String objectName,
+                                           @RequestParam @Valid Optional<@Positive Integer> duration) {
         if (!dataObjectService.exists(objectName)) {
             throw new ObjectNotFoundException(objectName);
         }
@@ -72,16 +76,19 @@ public class DataObjectController {
                 url = dataObjectService.publish(objectName);
             }
 
-            return ResponseEntity.ok(url.toString());
+            return assembler.toModel(
+                    new DataObjectWithUrl(
+                            objectName,
+                            url,
+                            duration.orElse(DataObjectService.DEFAULT_URL_EXPIRATION_TIME.toMillisPart())
+                    )
+            ).withSelf(ResponseModelAssembler.LINK_PUBLISH);
         } catch (DataObjectService.ObjectNotFoundException e) {
-            LOG.error("Object not found", e);
+            throw new IllegalStateException(e);
         }
-
-        // Ne dois jamais se produire
-        return ResponseEntity.internalServerError().build();
     }
 
-    @DeleteMapping("/data-object/{objectName}")
+    @DeleteMapping("v1/data-object/{objectName}")
     public ResponseEntity<Object> delete(@PathVariable String objectName, @RequestParam Optional<Boolean> recursive) {
         if (!dataObjectService.exists(objectName)) {
             throw new ObjectNotFoundException(objectName);
@@ -98,10 +105,7 @@ public class DataObjectController {
         } catch (DataObjectService.ObjectNotEmptyException e) {
             throw new DeleteFailedException(e.getMessage());
         } catch (DataObjectService.ObjectNotFoundException e) {
-            LOG.error("Object not found", e);
+            throw new IllegalStateException(e);
         }
-
-        // Ne dois jamais se produire
-        return ResponseEntity.internalServerError().build();
     }
 }
