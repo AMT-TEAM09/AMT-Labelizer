@@ -9,14 +9,12 @@ import ch.heigvd.amt.team09.dataobject.exception.FileUploadException;
 import ch.heigvd.amt.team09.dataobject.exception.ObjectAlreadyExistsException;
 import ch.heigvd.amt.team09.dataobject.exception.ObjectNotFoundException;
 import ch.heigvd.amt.team09.dataobject.service.interfaces.DataObjectService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +24,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 @RestController
+@Validated
 public class DataObjectController {
     private static final Logger LOG = LoggerFactory.getLogger(DataObjectController.class.getName());
     private final DataObjectService dataObjectService;
@@ -37,7 +36,12 @@ public class DataObjectController {
     }
 
     @PostMapping(value = "v1/data-object", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public DataObjectResponseModel upload(@Valid @NotBlank String objectName, @Valid @NotNull MultipartFile file) {
+    public DataObjectResponseModel upload(@RequestPart String objectName,
+                                          @RequestPart MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new FileUploadException("File is empty");
+        }
+
         byte[] content;
         try {
             content = file.getBytes();
@@ -61,7 +65,7 @@ public class DataObjectController {
 
     @GetMapping("v1/data-object/{objectName}")
     public DataObjectResponseModel publish(@PathVariable String objectName,
-                                           @RequestParam @Valid Optional<@Positive Integer> duration) {
+                                           @RequestParam Optional<@Positive Integer> duration) {
         if (!dataObjectService.exists(objectName)) {
             throw new ObjectNotFoundException(objectName);
         }

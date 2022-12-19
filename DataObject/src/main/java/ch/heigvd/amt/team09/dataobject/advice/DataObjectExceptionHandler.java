@@ -5,92 +5,71 @@ import ch.heigvd.amt.team09.dataobject.exception.DeleteFailedException;
 import ch.heigvd.amt.team09.dataobject.exception.FileUploadException;
 import ch.heigvd.amt.team09.dataobject.exception.ObjectAlreadyExistsException;
 import ch.heigvd.amt.team09.dataobject.exception.ObjectNotFoundException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class DataObjectExceptionHandler {
-    @ResponseBody
+public class DataObjectExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ObjectAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    String objectAlreadyExistsHandler(ObjectAlreadyExistsException e) {
-        return e.getMessage();
+    ResponseEntity<Object> handleObjectAlreadyExists(ObjectAlreadyExistsException e, WebRequest request) {
+        return handleException(HttpStatus.CONFLICT, e, request);
     }
 
-    @ResponseBody
     @ExceptionHandler(ObjectNotFoundException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    String objectNotFoundHandler(ObjectNotFoundException e) {
-        return e.getMessage();
+    ResponseEntity<Object> handleObjectNotFound(ObjectNotFoundException e, WebRequest request) {
+        return handleException(HttpStatus.NOT_FOUND, e, request);
     }
 
-    @ResponseBody
     @ExceptionHandler(FileUploadException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    String fileUploadHandler(FileUploadException e) {
-        return e.getMessage();
+    ResponseEntity<Object> handleFileUploadFailed(FileUploadException e, WebRequest request) {
+        return handleException(HttpStatus.UNPROCESSABLE_ENTITY, e, request);
     }
 
-    @ResponseBody
     @ExceptionHandler(DeleteFailedException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    String deleteFailedHandler(DeleteFailedException e) {
-        return e.getMessage();
+    ResponseEntity<Object> handleDeleteFailed(DeleteFailedException e, WebRequest request) {
+        return handleException(HttpStatus.UNPROCESSABLE_ENTITY, e, request);
     }
 
-    @ResponseBody
-    @ExceptionHandler(UnrecognizedPropertyException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String unknownPropertyHandler(UnrecognizedPropertyException e) {
-        return String.format("Unknown property '%s', excepting %s", e.getPropertyName(), e.getKnownPropertyIds());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(JsonParseException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String malformedJsonHandler(JsonParseException e) {
-        return String.format("Malformed JSON: %s at line %d, column %d",
-                e.getOriginalMessage(),
-                e.getLocation().getLineNr(),
-                e.getLocation().getColumnNr()
-        );
-    }
-
-    @ResponseBody
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String validationExceptionsHandler(MethodArgumentNotValidException e) {
-        return e.getFieldErrors().stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+    @ExceptionHandler(ConstraintViolationException.class)
+    ResponseEntity<Object> handleValidationException(ConstraintViolationException e, WebRequest request) {
+        var message = e.getConstraintViolations().stream()
+                .map(violation -> {
+                    String field = null;
+                    for (var node : violation.getPropertyPath()) {
+                        field = node.getName();
+                    }
+                    return formatTypeMismatch(field, violation.getInvalidValue(), violation.getMessage());
+                })
                 .collect(Collectors.joining("\r\n"));
+
+        return handleException(HttpStatus.UNPROCESSABLE_ENTITY, message, e, request);
     }
 
-    @ResponseBody
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String unreadableHttpHandler(HttpMessageNotReadableException e) {
-        return switch (e.getCause()) {
-            case InvalidFormatException ex -> handleFormatException(ex);
-            default -> String.format("Unknown error: %s", e.getMessage());
-        };
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        var message = formatTypeMismatch(ex.getName(), ex.getValue(), "wrong type");
+        return handleException(HttpStatus.UNPROCESSABLE_ENTITY, message, ex, request);
     }
 
-    private String handleFormatException(InvalidFormatException e) {
-        return String.format("Invalid value '%s' for field '%s', expecting %s",
-                e.getValue(),
-                e.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(Collectors.joining(".")),
-                e.getTargetType().getSimpleName()
-        );
+    private ResponseEntity<Object> handleException(HttpStatus status, Exception e, WebRequest request) {
+        return handleException(status, e.getLocalizedMessage(), e, request);
+    }
+
+    private ResponseEntity<Object> handleException(HttpStatus status, String message, Exception e, WebRequest request) {
+        var problem = createProblemDetail(e, status, message, null, null, request);
+        return handleExceptionInternal(e, problem, new HttpHeaders(), status, request);
+    }
+
+    private String formatTypeMismatch(String propertyName, Object actual, String message) {
+        return "Invalid value '%s' for field %s, %s".formatted(actual, propertyName, message);
     }
 }

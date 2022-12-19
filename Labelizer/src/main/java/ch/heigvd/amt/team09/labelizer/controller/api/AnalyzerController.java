@@ -4,7 +4,6 @@ import ch.heigvd.amt.team09.labelizer.assembler.LabelsModelAssembler;
 import ch.heigvd.amt.team09.labelizer.controller.request.AnalyzerRequest;
 import ch.heigvd.amt.team09.labelizer.dto.LabelsModel;
 import ch.heigvd.amt.team09.labelizer.exception.InvalidBase64Exception;
-import ch.heigvd.amt.team09.labelizer.exception.UnknownException;
 import ch.heigvd.amt.team09.labelizer.exception.UnreachableUrlException;
 import ch.heigvd.amt.team09.labelizer.service.interfaces.AnalyzerService;
 import jakarta.validation.Valid;
@@ -66,8 +65,7 @@ public class AnalyzerController {
                     })
             );
         } catch (IOException e) {
-            LOG.error("An error occurred while analyzing", e);
-            throw new UnknownException();
+            throw new IllegalStateException(e);
         }
     }
 
