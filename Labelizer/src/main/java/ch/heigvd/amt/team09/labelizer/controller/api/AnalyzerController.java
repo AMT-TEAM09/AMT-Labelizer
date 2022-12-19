@@ -63,7 +63,7 @@ public class AnalyzerController {
                         request.minConfidence().ifPresent(builder::minConfidence);
                         request.maxLabels().ifPresent(builder::maxLabels);
                     })
-            );
+            ).withSelf(LabelsModelAssembler.LINK_URL);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -82,6 +82,6 @@ public class AnalyzerController {
                     request.minConfidence().ifPresent(builder::minConfidence);
                     request.maxLabels().ifPresent(builder::maxLabels);
                 })
-        );
+        ).withSelf(LabelsModelAssembler.LINK_BASE64);
     }
 }
