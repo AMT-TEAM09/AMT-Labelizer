@@ -34,26 +34,33 @@ public interface DataObjectService {
     InputStream get(String objectName) throws ObjectNotFoundException;
 
     class DataObjectException extends Exception {
-        public DataObjectException(String message) {
+        private final String objectName;
+
+        public DataObjectException(String objectName, String message) {
             super(message);
+            this.objectName = objectName;
+        }
+
+        public String getObjectName() {
+            return objectName;
         }
     }
 
     class ObjectNotFoundException extends DataObjectException {
         public ObjectNotFoundException(String objectName) {
-            super("Object %s does not exist".formatted(objectName));
+            super(objectName, "Object %s does not exist".formatted(objectName));
         }
     }
 
     class ObjectAlreadyExistsException extends DataObjectException {
         public ObjectAlreadyExistsException(String objectName) {
-            super("Object %s already exists".formatted(objectName));
+            super(objectName, "Object %s already exists".formatted(objectName));
         }
     }
 
     class ObjectNotEmptyException extends DataObjectException {
         public ObjectNotEmptyException(String objectName) {
-            super("Object %s is not empty".formatted(objectName));
+            super(objectName, "Object %s is not empty".formatted(objectName));
         }
     }
 }

@@ -63,6 +63,28 @@ public class DataObjectController {
         }
     }
 
+    @DeleteMapping("v1/data-object")
+    public ResponseEntity<Object> delete(@RequestParam Optional<Boolean> recursive) {
+        if (!dataObjectService.exists()) {
+            throw new ObjectNotFoundException();
+        }
+
+        try {
+            if (recursive.isPresent()) {
+                dataObjectService.delete(recursive.get());
+            } else {
+                dataObjectService.delete();
+            }
+
+            return ResponseEntity.noContent().build();
+        } catch (DataObjectService.ObjectNotEmptyException e) {
+            LOG.info("Failed to delete root object", e);
+            throw new DeleteFailedException("Root object is not empty");
+        } catch (DataObjectService.ObjectNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @GetMapping("v1/data-object/{objectName}")
     public DataObjectResponseModel publish(@PathVariable String objectName,
                                            @RequestParam Optional<@Positive Integer> duration) {

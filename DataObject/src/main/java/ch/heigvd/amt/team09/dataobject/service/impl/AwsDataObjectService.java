@@ -70,6 +70,7 @@ public class AwsDataObjectService implements DataObjectService {
         );
     }
 
+    @Override
     public void create(String objectName, byte[] content) throws ObjectAlreadyExistsException {
         if (!bucketExists()) {
             createBucket();
@@ -86,14 +87,17 @@ public class AwsDataObjectService implements DataObjectService {
         client.putObject(request, RequestBody.fromBytes(content));
     }
 
+    @Override
     public boolean exists() {
         return bucketExists();
     }
 
+    @Override
     public boolean exists(String objectName) {
         return exists() && (objectExists(objectName) || folderExists(objectName));
     }
 
+    @Override
     public void delete(boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException {
         if (!bucketExists()) {
             throw new ObjectNotFoundException(bucketName);
@@ -112,6 +116,7 @@ public class AwsDataObjectService implements DataObjectService {
         deleteBucket();
     }
 
+    @Override
     public void delete(String objectName, boolean recursive) throws ObjectNotFoundException, ObjectNotEmptyException {
         if (!bucketExists()) {
             throw new ObjectNotFoundException(bucketName);
@@ -124,6 +129,7 @@ public class AwsDataObjectService implements DataObjectService {
         deleteFolder(objectName, recursive);
     }
 
+    @Override
     public URL publish(String objectName, Duration urlDuration) throws ObjectNotFoundException {
         if (urlDuration.isNegative() || urlDuration.isZero())
             throw new IllegalArgumentException("Duration must be positive");
@@ -148,6 +154,7 @@ public class AwsDataObjectService implements DataObjectService {
         return result.url();
     }
 
+    @Override
     public InputStream get(String objectName) throws ObjectNotFoundException {
         if (!bucketExists()) {
             throw new ObjectNotFoundException(bucketName);

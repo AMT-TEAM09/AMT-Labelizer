@@ -16,6 +16,7 @@ public class ResponseModelAssembler implements RepresentationModelAssembler<Data
     public static final String LINK_UPLOAD = "upload";
     public static final String LINK_PUBLISH = "publish";
     public static final String LINK_DELETE = "delete";
+    public static final String LINK_DELETE_ROOT = "deleteRoot";
 
     @Override
     public DataObjectResponseModel toModel(DataObjectResponse content) {
@@ -30,6 +31,9 @@ public class ResponseModelAssembler implements RepresentationModelAssembler<Data
         model.add(linkTo(methodOn(DataObjectController.class).delete(
                 content.objectName(), Optional.empty()
         )).withRel(LINK_DELETE));
+        model.add(linkTo(methodOn(DataObjectController.class).delete(
+                Optional.empty()
+        )).withRel(LINK_DELETE_ROOT));
 
         return model;
     }
