@@ -35,6 +35,28 @@ public class DataObjectController {
         this.assembler = assembler;
     }
 
+    @DeleteMapping(value = "v1/data-object")
+    public ResponseEntity<Object> delete(@RequestParam Optional<Boolean> recursive) {
+        if (!dataObjectService.exists()) {
+            throw new ObjectNotFoundException();
+        }
+
+        try {
+            if (recursive.isPresent()) {
+                dataObjectService.delete(recursive.get());
+            } else {
+                dataObjectService.delete();
+            }
+
+            return ResponseEntity.noContent().build();
+        } catch (DataObjectService.ObjectNotEmptyException e) {
+            LOG.info("Failed to delete root object", e);
+            throw new DeleteFailedException("Root object is not empty");
+        } catch (DataObjectService.ObjectNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @PostMapping(value = "v1/data-object", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public DataObjectResponseModel upload(@RequestPart String objectName,
                                           @RequestPart MultipartFile file) {
@@ -63,30 +85,29 @@ public class DataObjectController {
         }
     }
 
-    @DeleteMapping("v1/data-object")
-    public ResponseEntity<Object> delete(@RequestParam Optional<Boolean> recursive) {
-        if (!dataObjectService.exists()) {
-            throw new ObjectNotFoundException();
+    @DeleteMapping(value = "v1/data-object", params = "objectName")
+    public ResponseEntity<Object> delete(@RequestParam String objectName, @RequestParam Optional<Boolean> recursive) {
+        if (!dataObjectService.exists(objectName)) {
+            throw new ObjectNotFoundException(objectName);
         }
 
         try {
             if (recursive.isPresent()) {
-                dataObjectService.delete(recursive.get());
+                dataObjectService.delete(objectName, recursive.get());
             } else {
-                dataObjectService.delete();
+                dataObjectService.delete(objectName);
             }
 
             return ResponseEntity.noContent().build();
         } catch (DataObjectService.ObjectNotEmptyException e) {
-            LOG.info("Failed to delete root object", e);
-            throw new DeleteFailedException("Root object is not empty");
+            throw new DeleteFailedException(e.getMessage());
         } catch (DataObjectService.ObjectNotFoundException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    @GetMapping("v1/data-object/{objectName}")
-    public DataObjectResponseModel publish(@PathVariable String objectName,
+    @GetMapping("v1/data-object")
+    public DataObjectResponseModel publish(@RequestParam String objectName,
                                            @RequestParam Optional<@Positive Integer> duration) {
         if (!dataObjectService.exists(objectName)) {
             throw new ObjectNotFoundException(objectName);
@@ -109,27 +130,6 @@ public class DataObjectController {
                             duration.orElse(DataObjectService.DEFAULT_URL_EXPIRATION_TIME.toMillisPart())
                     )
             ).withSelf(ResponseModelAssembler.LINK_PUBLISH);
-        } catch (DataObjectService.ObjectNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    @DeleteMapping("v1/data-object/{objectName}")
-    public ResponseEntity<Object> delete(@PathVariable String objectName, @RequestParam Optional<Boolean> recursive) {
-        if (!dataObjectService.exists(objectName)) {
-            throw new ObjectNotFoundException(objectName);
-        }
-
-        try {
-            if (recursive.isPresent()) {
-                dataObjectService.delete(objectName, recursive.get());
-            } else {
-                dataObjectService.delete(objectName);
-            }
-
-            return ResponseEntity.noContent().build();
-        } catch (DataObjectService.ObjectNotEmptyException e) {
-            throw new DeleteFailedException(e.getMessage());
         } catch (DataObjectService.ObjectNotFoundException e) {
             throw new IllegalStateException(e);
         }
