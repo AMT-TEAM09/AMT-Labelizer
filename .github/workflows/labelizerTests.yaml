@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - "Labelizer/**"
-      - ".github/workflows/labelizerTests.yml"
+      - ".github/workflows/labelizerTests.yaml"
 defaults:
   run:
     working-directory: Labelizer
