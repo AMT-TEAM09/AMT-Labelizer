@@ -51,7 +51,7 @@ public class AnalyzerController {
         }
     }
 
-    @PostMapping("analyzer/v1/url")
+    @PostMapping("v1/analyzer/url")
     public LabelsModel fromUrl(@Valid @RequestBody AnalyzerRequest request) {
         var url = request.source();
         if (!isUrlValid(url)) {
@@ -70,7 +70,7 @@ public class AnalyzerController {
         }
     }
 
-    @PostMapping("analyzer/v1/base64")
+    @PostMapping("v1/analyzer/base64")
     public LabelsModel fromBase64(@Valid @RequestBody AnalyzerRequest request) {
         var base64 = request.source();
 
