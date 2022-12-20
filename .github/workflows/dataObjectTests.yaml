@@ -34,4 +34,3 @@ jobs:
           -e AWS_BUCKET_NAME='${{ secrets.AWS_BUCKET_NAME }}' \
           -e AWS_REGION='eu-west-2' \
           --rm ${{ env.TEST_TAG }}
-          
