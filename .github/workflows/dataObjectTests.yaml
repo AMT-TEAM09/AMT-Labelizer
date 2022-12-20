@@ -7,6 +7,10 @@ on:
 defaults:
   run:
     working-directory: DataObject
+
+env:
+  TEST_TAG: dataobject:test
+
 jobs:
   tests:
     runs-on: ubuntu-22.04
@@ -22,9 +26,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         
-      - name: Build and push
+      - name: Build
         uses: docker/build-push-action@v3
         with:
           context: DataObject/.
-          target: test
           file: DataObject/Dockerfile
+          load: true
+          target: test
+          tags: ${{ env.TEST_TAG }}
+
+      - name: Run tests
+        run: |
+          docker run --rm ${{ env.TEST_TAG }}
