@@ -4,7 +4,9 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 RUN sed -i 's/\r$//' mvnw \
-    # replaces CRLF with LF
+    # ^ replaces CRLF with LF
+    && chmod +x mvnw \
+    # ^ makes mvnw executable
     && ./mvnw dependency:resolve
 COPY src ./src
 
