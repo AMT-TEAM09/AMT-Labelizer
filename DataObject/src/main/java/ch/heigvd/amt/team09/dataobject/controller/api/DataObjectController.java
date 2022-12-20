@@ -35,7 +35,7 @@ public class DataObjectController {
         this.assembler = assembler;
     }
 
-    @DeleteMapping(value = "v1/data-object")
+    @DeleteMapping(value = "data-object/v1/objects")
     public ResponseEntity<Object> delete(@RequestParam Optional<Boolean> recursive) {
         if (!dataObjectService.exists()) {
             throw new ObjectNotFoundException();
@@ -57,7 +57,7 @@ public class DataObjectController {
         }
     }
 
-    @PostMapping(value = "v1/data-object", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "data-object/v1/objects", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public DataObjectResponseModel upload(@RequestPart String objectName,
                                           @RequestPart MultipartFile file) {
         if (file.isEmpty()) {
@@ -85,7 +85,7 @@ public class DataObjectController {
         }
     }
 
-    @DeleteMapping(value = "v1/data-object", params = "objectName")
+    @DeleteMapping(value = "data-object/v1/objects", params = "objectName")
     public ResponseEntity<Object> delete(@RequestParam String objectName, @RequestParam Optional<Boolean> recursive) {
         if (!dataObjectService.exists(objectName)) {
             throw new ObjectNotFoundException(objectName);
@@ -106,7 +106,7 @@ public class DataObjectController {
         }
     }
 
-    @GetMapping("v1/data-object")
+    @GetMapping("data-object/v1/objects")
     public DataObjectResponseModel publish(@RequestParam String objectName,
                                            @RequestParam Optional<@Positive Integer> duration) {
         if (!dataObjectService.exists(objectName)) {

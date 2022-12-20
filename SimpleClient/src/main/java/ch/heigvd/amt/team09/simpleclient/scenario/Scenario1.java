@@ -27,17 +27,23 @@ public class Scenario1 extends Scenario {
                 Premier appel au service.
                 -----
                 -   Le bucket doit être créé
-                -   L’image doit être uploadée
+                -   L'image doit être uploadée
                 -   Publication
                 -   Analyse
-                -   Livraison du résultat sur le bucket hébergeant l’image.
+                -   Livraison du résultat sur le bucket hébergeant l'image.
                 """;
     }
 
     @Override
+    protected void setup() {
+        var deleteStatus = assertDoesNotThrow(this::deleteRoot);
+        assertTrue(deleteStatus == 204 || deleteStatus == 404);
+    }
+
+    @Override
     protected void cleanup() {
-        assertTrue(assertDoesNotThrow(() -> deleteObject(OBJECT_KEY)));
-        assertTrue(assertDoesNotThrow(() -> deleteObject(OBJECT_RESULTS_KEY)));
+        assertDoesNotThrow(() -> deleteObject(OBJECT_KEY));
+        assertDoesNotThrow(() -> deleteObject(OBJECT_RESULTS_KEY));
     }
 
     @Override
@@ -45,8 +51,6 @@ public class Scenario1 extends Scenario {
         // # Upload image
         // given
         assertTrue(Files.exists(IMAGE));
-        var deleteStatus = assertDoesNotThrow(this::deleteRoot);
-        assertTrue(deleteStatus == 204 || deleteStatus == 404);
         assertFalse(assertDoesNotThrow(() -> objectExists(OBJECT_KEY)));
         assertFalse(assertDoesNotThrow(() -> objectExists(OBJECT_RESULTS_KEY)));
 

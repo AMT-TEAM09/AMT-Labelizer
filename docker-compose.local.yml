@@ -7,7 +7,7 @@ services:
       - AWS_REGION=${AWS_REGION}
 
     build:
-      context: ./Labelizer
+      context: Labelizer/.
       dockerfile: Dockerfile
 
     ports:
@@ -22,7 +22,7 @@ services:
       - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
 
     build:
-      context: ./DataObject
+      context: DataObject/.
       dockerfile: Dockerfile
 
     ports:

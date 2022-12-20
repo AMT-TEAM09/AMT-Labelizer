@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class Scenario {
-    private static final String DATA_OBJECT_URI = "http://localhost:8080/data-object/v1";
+    private static final String DATA_OBJECT_URI = "http://localhost:8080/data-object/v1/objects";
     private static final String DATA_OBJECT_UPLOAD_URI = DATA_OBJECT_URI;
     private static final String DATA_OBJECT_PUBLISH_URI = DATA_OBJECT_URI;
     private static final String DATA_OBJECT_DELETE_ROOT_URI = DATA_OBJECT_URI;

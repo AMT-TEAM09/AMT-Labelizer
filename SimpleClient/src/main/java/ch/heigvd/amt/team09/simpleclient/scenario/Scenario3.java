@@ -16,12 +16,6 @@ public class Scenario3 extends Scenario {
     private static final String OBJECT_RESULTS_KEY = "3-some-results";
 
     @Override
-    protected void setup() {
-        // Création du bucket
-        assertTrue(assertDoesNotThrow(() -> uploadFile(OBJECT_KEY, IMAGE)));
-    }
-
-    @Override
     protected String name() {
         return "Scenario 3 : tout existe";
     }
@@ -30,12 +24,17 @@ public class Scenario3 extends Scenario {
     protected String description() {
         return """
                 -   Le bucket ne doit pas être créé
+                -   L'image ne doit être uploadée
                 -----
-                -   L’image doit être uploadée
                 -   Publication
                 -   Analyse
-                -   Livraison du résultat sur le bucket hébergeant l’image.
+                -   Livraison du résultat sur le bucket hébergeant l'image.
                 """;
+    }
+
+    @Override
+    protected void setup() {
+        assertDoesNotThrow(() -> uploadFile(OBJECT_KEY, IMAGE));
     }
 
     @Override
