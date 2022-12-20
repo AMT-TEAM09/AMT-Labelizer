@@ -8,7 +8,7 @@ class LabelizerApplicationTests {
 
 	@Test
 	void contextLoads() {
-		assert(true);
+		assert(false);
 	}
 
 }
