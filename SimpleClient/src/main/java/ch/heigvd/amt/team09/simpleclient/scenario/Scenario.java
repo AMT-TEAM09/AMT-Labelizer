@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mizosoft.methanol.Methanol;
 import com.github.mizosoft.methanol.MultipartBodyPublisher;
+import org.junit.jupiter.api.function.ThrowingSupplier;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public abstract class Scenario {
     private static final String DATA_OBJECT_URI = "http://localhost:8080/data-object/v1/objects";
     private static final String DATA_OBJECT_UPLOAD_URI = DATA_OBJECT_URI;
@@ -27,6 +30,10 @@ public abstract class Scenario {
     private static final String DATA_OBJECT_DELETE_ROOT_URI = DATA_OBJECT_URI;
     private static final String DATA_OBJECT_DELETE_OBJECT_URI = DATA_OBJECT_URI;
     private static final String ANALYZER_URI = "http://localhost:8081/analyzer/v1/url";
+
+    private static final Path IMAGE = Path.of("src", "main", "resources", "image.jpg");
+    private static final String OBJECT_KEY = "scenario-object";
+    private static final String OBJECT_RESULTS_KEY = "scenario-results";
 
     private final Methanol client;
 
@@ -53,6 +60,8 @@ public abstract class Scenario {
         return mapper.readValue(json, typeRef);
     }
 
+    protected abstract void setup();
+
     public void start() {
         System.out.println("Running " + name() + ":");
         System.out.println(description());
@@ -60,6 +69,7 @@ public abstract class Scenario {
         System.out.println("Setup...");
         setup();
 
+        System.out.println("Running...");
         run();
 
         System.out.println("Cleanup...");
@@ -75,13 +85,64 @@ public abstract class Scenario {
 
     protected abstract void run();
 
-    protected void setup() {
-    }
-
     protected void cleanup() {
+        assertDoesNotThrow(() -> deleteObjectRequest(OBJECT_KEY));
+        assertDoesNotThrow(() -> deleteObjectRequest(OBJECT_RESULTS_KEY));
     }
 
-    protected boolean objectExists(String objectName) throws IOException, InterruptedException {
+    protected void uploadImage() {
+        // given
+        assertTrue(Files.exists(IMAGE));
+        assertFalse(assertDoesNotThrow(() -> objectExistsRequest(OBJECT_KEY)));
+        assertFalse(assertDoesNotThrow(() -> objectExistsRequest(OBJECT_RESULTS_KEY)));
+
+        // when
+        ThrowingSupplier<Boolean> uploadImage = () -> uploadRequest(OBJECT_KEY, IMAGE);
+
+        // then
+        var imageUploaded = assertDoesNotThrow(uploadImage);
+        assertTrue(imageUploaded);
+    }
+
+    protected URL publishImage() {
+        // given
+        assertTrue(assertDoesNotThrow(() -> objectExistsRequest(OBJECT_KEY)));
+
+        // when
+        ThrowingSupplier<Optional<URL>> publish = () -> publishRequest(OBJECT_KEY);
+
+        // then
+        return assertDoesNotThrow(publish).orElseGet(() -> fail("No URL returned"));
+    }
+
+    protected List<Map<String, Double>> analyzeImage(URL url) {
+        // given
+        assertTrue(isUrlValid(url));
+
+        // when
+        ThrowingSupplier<Optional<Map<String, Object>>> analyze = () -> analyzeRequest(url);
+
+        // then
+        var results = assertDoesNotThrow(analyze).orElseGet(() -> fail("No results returned"));
+        var labels = assertDoesNotThrow(() -> (List<Map<String, Double>>) results.get("labels"));
+        assertFalse(labels.isEmpty());
+
+        return labels;
+    }
+
+    protected void uploadResults(List<Map<String, Double>> labels) {
+        // given
+        assertFalse(assertDoesNotThrow(() -> objectExistsRequest(OBJECT_RESULTS_KEY)));
+
+        // when
+        ThrowingSupplier<Boolean> uploadResults = () -> uploadResultsRequest(OBJECT_RESULTS_KEY, labels);
+
+        // then
+        var resultsUploaded = assertDoesNotThrow(uploadResults);
+        assertTrue(resultsUploaded);
+    }
+
+    private boolean objectExistsRequest(String objectName) throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(DATA_OBJECT_PUBLISH_URI + "?objectName=" + objectName))
                 .method("HEAD", HttpRequest.BodyPublishers.noBody())
@@ -90,16 +151,12 @@ public abstract class Scenario {
         return sendRequest(request, HttpResponse.BodyHandlers.discarding()).statusCode() == 200;
     }
 
-    protected boolean deleteObject(String objectName) throws IOException, InterruptedException {
-        var request = HttpRequest.newBuilder()
-                .uri(URI.create(DATA_OBJECT_DELETE_OBJECT_URI + "?objectName=" + objectName))
-                .DELETE()
-                .build();
-
-        return sendRequest(request, HttpResponse.BodyHandlers.discarding()).statusCode() == 204;
+    protected boolean createRootObject() {
+        assertDoesNotThrow(this::uploadImage);
+        return assertDoesNotThrow(() -> deleteObjectRequest(OBJECT_KEY));
     }
 
-    protected int deleteRoot() throws IOException, InterruptedException {
+    protected int deleteRootRequest() throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(DATA_OBJECT_DELETE_ROOT_URI + "?recursive=true"))
                 .DELETE()
@@ -108,7 +165,16 @@ public abstract class Scenario {
         return sendRequest(request, HttpResponse.BodyHandlers.discarding()).statusCode();
     }
 
-    protected boolean uploadResults(String objectName, List<Map<String, Double>> labels) throws IOException,
+    private boolean deleteObjectRequest(String objectName) throws IOException, InterruptedException {
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(DATA_OBJECT_DELETE_OBJECT_URI + "?objectName=" + objectName))
+                .DELETE()
+                .build();
+
+        return sendRequest(request, HttpResponse.BodyHandlers.discarding()).statusCode() == 204;
+    }
+
+    private boolean uploadResultsRequest(String objectName, List<Map<String, Double>> labels) throws IOException,
             InterruptedException {
         var tempFile = Files.createTempFile("results", ".json");
         try {
@@ -119,13 +185,13 @@ public abstract class Scenario {
         }
 
         try {
-            return uploadFile(objectName, tempFile);
+            return uploadRequest(objectName, tempFile);
         } finally {
             Files.delete(tempFile);
         }
     }
 
-    protected boolean uploadFile(String objectName, Path filePath) throws IOException, InterruptedException {
+    private boolean uploadRequest(String objectName, Path filePath) throws IOException, InterruptedException {
         var multipartBody = MultipartBodyPublisher.newBuilder()
                 .filePart("file", filePath)
                 .textPart("objectName", objectName)
@@ -139,7 +205,7 @@ public abstract class Scenario {
         return sendRequest(request, HttpResponse.BodyHandlers.ofString()).statusCode() == 200;
     }
 
-    protected Optional<URL> publishImage(String key) throws IOException, InterruptedException {
+    private Optional<URL> publishRequest(String key) throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(DATA_OBJECT_PUBLISH_URI + "?objectName=" + key))
                 .GET()
@@ -157,7 +223,7 @@ public abstract class Scenario {
         return Optional.of(url);
     }
 
-    protected Optional<Map<String, Object>> analyzeImage(URL imageUrl) throws IOException, InterruptedException {
+    private Optional<Map<String, Object>> analyzeRequest(URL imageUrl) throws IOException, InterruptedException {
         var postData = """
                 {
                     "source": "%s"
