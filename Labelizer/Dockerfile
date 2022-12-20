@@ -1,16 +1,18 @@
-# syntax = docker/dockerfile:1.2
+# syntax = docker/dockerfile:1
 FROM eclipse-temurin:17-jdk-jammy AS base
 WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
+RUN sed -i 's/\r$//' mvnw \
+    # replaces CRLF with LF
+    && ./mvnw dependency:resolve
 COPY src ./src
-RUN ./mvnw dependency:resolve
 
 FROM base AS build
 RUN ./mvnw package -DskipTests
 
 FROM base AS test
-RUN ./mvnw test
+CMD ["./mvnw", "test"]
 
 FROM eclipse-temurin:17-jre-jammy AS production
 EXPOSE 8081
