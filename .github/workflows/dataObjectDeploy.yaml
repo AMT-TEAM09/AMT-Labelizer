@@ -28,4 +28,4 @@ jobs:
           context: DataObject/.
           target: production
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/dataobject:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/dataobject:production

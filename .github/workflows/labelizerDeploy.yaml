@@ -28,4 +28,4 @@ jobs:
           context: Labelizer/.
           target: production
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/labelizer:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/labelizer:production
