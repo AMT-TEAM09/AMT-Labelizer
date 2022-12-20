@@ -4,6 +4,7 @@ on:
     workflows: [Labelizer - Tests]
     types: [completed]
     branches: [main]
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,6 +27,5 @@ jobs:
         with:
           context: Labelizer/.
           target: production
-          file: Labelizer/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/labelizer:latest
