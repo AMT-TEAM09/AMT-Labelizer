@@ -4,9 +4,6 @@ on:
     paths:
       - "DataObject/**"
       - ".github/workflows/dataObjectTests.yaml"
-defaults:
-  run:
-    working-directory: DataObject
 
 env:
   TEST_TAG: dataobject:test
