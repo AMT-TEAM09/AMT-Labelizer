@@ -35,7 +35,7 @@ public class DataObjectController {
         this.assembler = assembler;
     }
 
-    @DeleteMapping(value = "v1/data-object")
+    @DeleteMapping(value = "data-object/v1")
     public ResponseEntity<Object> delete(@RequestParam Optional<Boolean> recursive) {
         if (!dataObjectService.exists()) {
             throw new ObjectNotFoundException();
@@ -50,14 +50,14 @@ public class DataObjectController {
 
             return ResponseEntity.noContent().build();
         } catch (DataObjectService.ObjectNotEmptyException e) {
-            LOG.info("Failed to delete root object", e);
+            LOG.info("Failed to delete root object: {}", e.getMessage());
             throw new DeleteFailedException("Root object is not empty");
         } catch (DataObjectService.ObjectNotFoundException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    @PostMapping(value = "v1/data-object", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "data-object/v1", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public DataObjectResponseModel upload(@RequestPart String objectName,
                                           @RequestPart MultipartFile file) {
         if (file.isEmpty()) {
@@ -68,7 +68,7 @@ public class DataObjectController {
         try {
             content = file.getBytes();
         } catch (IOException e) {
-            LOG.error("Failed to read file", e);
+            LOG.error("Failed to read file: {}", e.getMessage());
             throw new FileUploadException("File %s could not be read".formatted(file.getOriginalFilename()));
         }
 
@@ -85,7 +85,7 @@ public class DataObjectController {
         }
     }
 
-    @DeleteMapping(value = "v1/data-object", params = "objectName")
+    @DeleteMapping(value = "data-object/v1", params = "objectName")
     public ResponseEntity<Object> delete(@RequestParam String objectName, @RequestParam Optional<Boolean> recursive) {
         if (!dataObjectService.exists(objectName)) {
             throw new ObjectNotFoundException(objectName);
@@ -106,7 +106,7 @@ public class DataObjectController {
         }
     }
 
-    @GetMapping("v1/data-object")
+    @GetMapping("data-object/v1")
     public DataObjectResponseModel publish(@RequestParam String objectName,
                                            @RequestParam Optional<@Positive Integer> duration) {
         if (!dataObjectService.exists(objectName)) {

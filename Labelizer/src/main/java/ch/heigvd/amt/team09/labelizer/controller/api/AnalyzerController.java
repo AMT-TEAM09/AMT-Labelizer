@@ -9,6 +9,7 @@ import ch.heigvd.amt.team09.labelizer.service.interfaces.AnalyzerService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +34,9 @@ public class AnalyzerController {
         try {
             var huc = (HttpURLConnection) new URL(url).openConnection();
             var responseCode = huc.getResponseCode();
-            return responseCode == 200;
+            return responseCode == HttpStatus.OK.value();
         } catch (IOException e) {
-            LOG.error("Requested URL is not reachable", e);
+            LOG.info("Requested URL is not reachable: {}", e.getMessage());
             return false;
         }
     }
@@ -45,12 +46,12 @@ public class AnalyzerController {
             Base64.getDecoder().decode(base64);
             return true;
         } catch (IllegalArgumentException e) {
-            LOG.error("Requested base64 is not valid", e);
+            LOG.info("Requested base64 is not valid: {}", e.getMessage());
             return false;
         }
     }
 
-    @PostMapping("v1/analyzer/url")
+    @PostMapping("analyzer/v1/url")
     public LabelsModel fromUrl(@Valid @RequestBody AnalyzerRequest request) {
         var url = request.source();
         if (!isUrlValid(url)) {
@@ -69,7 +70,7 @@ public class AnalyzerController {
         }
     }
 
-    @PostMapping("v1/analyzer/base64")
+    @PostMapping("analyzer/v1/base64")
     public LabelsModel fromBase64(@Valid @RequestBody AnalyzerRequest request) {
         var base64 = request.source();
 
