@@ -6,7 +6,7 @@ on:
       - ".github/workflows/dataObjectTests.yaml"
 
 concurrency:
-  group: ${{ github.ref }}
+  group: data-object-${{ github.ref }}
 
 env:
   TEST_TAG: dataobject:test
@@ -37,9 +37,3 @@ jobs:
           -e AWS_BUCKET_NAME='${{ secrets.AWS_BUCKET_NAME }}' \
           -e AWS_REGION='eu-west-2' \
           --rm ${{ env.TEST_TAG }}
-
-  integration-tests:
-    needs: tests
-    uses: ./.github/workflows/simpleClientTests.yaml
-    secrets: inherit
-

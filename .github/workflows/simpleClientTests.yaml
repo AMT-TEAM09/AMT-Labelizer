@@ -1,9 +1,15 @@
 name: "SimpleClient - Integration Tests"
 on:
-  workflow_call:
+  pull_request:
+    branches:
+      - master
+  push:
+    paths:
+      - "SimpleClient/**"
+      - ".github/workflows/simpleClientTests.yaml"
 
 concurrency:
-  group: ${{ github.ref }}
+  group: data-object-${{ github.ref }}
 
 jobs:
   tests:

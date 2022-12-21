@@ -3,7 +3,7 @@ on:
   workflow_run:
     workflows: [DataObject - Tests]
     types: [completed]
-    branches: [main]
+    branches: [master]
 
 jobs:
   deploy:
