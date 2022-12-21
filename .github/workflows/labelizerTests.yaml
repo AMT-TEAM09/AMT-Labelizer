@@ -38,4 +38,3 @@ jobs:
     needs: tests
     uses: ./.github/workflows/simpleClientTests.yaml
     secrets: inherit
-

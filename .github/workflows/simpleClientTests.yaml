@@ -3,7 +3,7 @@ on:
   workflow_call:
 
 concurrency:
-  group: client-${{ github.ref }}
+  group: ${{ github.ref }}
 
 jobs:
   tests:

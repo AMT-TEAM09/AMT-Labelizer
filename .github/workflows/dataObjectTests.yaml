@@ -5,6 +5,9 @@ on:
       - "DataObject/**"
       - ".github/workflows/dataObjectTests.yaml"
 
+concurrency:
+  group: ${{ github.ref }}
+
 env:
   TEST_TAG: dataobject:test
 
