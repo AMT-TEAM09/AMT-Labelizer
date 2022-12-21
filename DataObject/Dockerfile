@@ -18,8 +18,9 @@ CMD ["./mvnw", "test"]
 
 FROM eclipse-temurin:17-jre-jammy AS production
 EXPOSE 8080
-RUN groupadd -r springusers && useradd -r -g springusers user
-USER user:springusers
+RUN groupadd -r spring \
+    && useradd -r -g spring spring
+USER spring:spring
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 CMD ["java","--enable-preview",  "-Djava.security.egd=file:/dev/./urandom","-jar","app.jar"]
