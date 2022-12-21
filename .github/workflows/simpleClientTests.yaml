@@ -3,7 +3,7 @@ on:
   workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: client-${{ github.ref }}
 
 jobs:
   tests:
@@ -31,4 +31,4 @@ jobs:
 
       - name: Run tests
         working-directory: ./SimpleClient
-        run: mvn exec:java
+        run: mvn package exec:java
