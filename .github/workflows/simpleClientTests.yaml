@@ -34,7 +34,7 @@ jobs:
 
       - name: Docker Compose Up
         run: |
-          docker compose -f docker-compose.local.yml up -d
+          docker compose -f docker-compose.local.yml up
           sleep 30
 
       - name: Set up JDK 17
@@ -42,7 +42,6 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
-          cache: maven
 
       - name: Run tests
         working-directory: ./SimpleClient
