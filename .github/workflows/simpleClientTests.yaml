@@ -26,7 +26,7 @@ jobs:
           touch .env
           echo AWS_ACCESS_KEY_ID=test1 >> .env
           echo AWS_SECRET_ACCESS_KEY=test2 >> .env
-          echo AWS_REGION=${ {secrets.AWS_REGION }} >> .env
+          echo AWS_REGION=${{ secrets.AWS_REGION }} >> .env
           echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .env
           cat .env
 
