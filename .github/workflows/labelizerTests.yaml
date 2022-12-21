@@ -4,8 +4,7 @@ on:
     paths:
       - "Labelizer/**"
       - ".github/workflows/labelizerTests.yaml"
-  workflow_dispatch:
-  
+
 env:
   TEST_TAG: labelizer:test
 

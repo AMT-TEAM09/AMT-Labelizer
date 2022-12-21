@@ -1,6 +1,6 @@
 name: "SimpleClient - Integration Tests"
 on:
-  workflow_call:
+  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
