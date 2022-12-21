@@ -18,16 +18,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Compose up
-        uses: isbang/compose-action@v1.4.1
-        with:
-          compose-file: "./docker-compose.local.yml"
-        env:
-          AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
-          AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
-          AWS_REGION: "${AWS_REGION}"
-          AWS_BUCKET_NAME: "${AWS_BUCKET_NAME}"
-        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Setup Env File
+        run: |
+          touch .env
+          echo AWS_ACCESS_KEY_ID=test1 >> .env
+          echo AWS_SECRET_ACCESS_KEY=test2 >> .env
+          echo AWS_REGION=${AWS_REGION} >> .env
+          echo AWS_BUCKET_NAME=${AWS_BUCKET_NAME} >> .env
+          cat .env
+
+      - name: Docker Compose Build
+        run: docker compose -f docker-compose.local.yml build
+
+      - name: Docker Compose Up
+        run: docker compose -f docker-compose.local.yml up -d
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
