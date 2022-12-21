@@ -1,6 +1,6 @@
 name: "SimpleClient - Integration Tests"
 on:
-  push:
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,6 +27,8 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
+          cache: maven
 
       - name: Run tests
+        working-directory: ./SimpleClient
         run: mvn exec:java
