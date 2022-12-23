@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Arrays;
 
-// TODO regarder si record nécessaire
 public record Labels(@JsonProperty("labels") Label[] _labels) {
     @Override
     public boolean equals(Object o) {

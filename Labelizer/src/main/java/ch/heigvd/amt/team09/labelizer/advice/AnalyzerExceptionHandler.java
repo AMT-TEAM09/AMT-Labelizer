@@ -27,7 +27,7 @@ public class AnalyzerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidBase64Exception.class)
-    ResponseEntity<Object> handleUnreachableUrl(InvalidBase64Exception e, WebRequest request) {
+    ResponseEntity<Object> handleInvalidBase64(InvalidBase64Exception e, WebRequest request) {
         return handleException(HttpStatus.UNPROCESSABLE_ENTITY, e, request);
     }
 
@@ -37,7 +37,7 @@ public class AnalyzerExceptionHandler extends ResponseEntityExceptionHandler {
         var message = e.getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining("\r\n"));
-        return handleException(HttpStatus.BAD_REQUEST, message, e, request);
+        return handleException(HttpStatus.UNPROCESSABLE_ENTITY, message, e, request);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class AnalyzerExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getValue(),
                 e.getPath().stream().map(JsonMappingException.Reference::getFieldName).collect(Collectors.joining("."))
         );
-        return handleException(HttpStatus.BAD_REQUEST, message, e, request);
+        return handleException(HttpStatus.UNPROCESSABLE_ENTITY, message, e, request);
     }
 
     private ResponseEntity<Object> handleException(HttpStatus status, Exception e, WebRequest request) {
