@@ -5,7 +5,11 @@ import java.net.URL;
 import java.time.Duration;
 
 public interface DataObjectService {
-    Duration DEFAULT_URL_EXPIRATION_TIME = Duration.ofSeconds(90);
+    Duration DEFAULT_URL_EXPIRATION_TIME = Duration.ofMinutes(90);
+
+    default Duration getDefaultUrlExpirationTime() {
+        return DEFAULT_URL_EXPIRATION_TIME;
+    }
 
     void create(String objectName, byte[] content) throws ObjectAlreadyExistsException;
 
@@ -28,7 +32,7 @@ public interface DataObjectService {
     URL publish(String objectName, Duration urlDuration) throws ObjectNotFoundException;
 
     default URL publish(String objectName) throws ObjectNotFoundException {
-        return publish(objectName, DEFAULT_URL_EXPIRATION_TIME);
+        return publish(objectName, getDefaultUrlExpirationTime());
     }
 
     InputStream get(String objectName) throws ObjectNotFoundException;

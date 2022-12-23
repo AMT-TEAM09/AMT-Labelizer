@@ -28,6 +28,7 @@ public class AwsDataObjectService implements DataObjectService {
     private final String bucketName;
     private final S3Client client;
     private final S3Presigner presigner;
+    private final Duration urlDuration;
 
     private AwsDataObjectService(Optional<String> bucketName) {
         var dotenv = Dotenv.configure()
@@ -39,6 +40,22 @@ public class AwsDataObjectService implements DataObjectService {
         var credentials = getCredentialsProvider(dotenv);
 
         this.bucketName = bucketName.orElseGet(() -> Objects.requireNonNull(dotenv.get("AWS_BUCKET_NAME"), "AWS_BUCKET_NAME is not set"));
+
+        var urlDurationString = dotenv.get("AWS_URL_DURATION");
+        if (urlDurationString == null) {
+            urlDuration = DataObjectService.DEFAULT_URL_EXPIRATION_TIME;
+            LOG.warn("AWS_URL_DURATION is not set, using default value");
+        } else {
+            Long urlDurationMinutes = null;
+            try {
+                urlDurationMinutes = Long.parseUnsignedLong(urlDurationString);
+            } catch (NumberFormatException e) {
+                LOG.warn("AWS_URL_DURATION is not a valid positive number, using default value");
+            }
+            urlDuration = urlDurationMinutes == null
+                    ? DataObjectService.DEFAULT_URL_EXPIRATION_TIME
+                    : Duration.ofMinutes(urlDurationMinutes);
+        }
 
         client = S3Client.builder()
                 .credentialsProvider(credentials)
@@ -68,6 +85,11 @@ public class AwsDataObjectService implements DataObjectService {
                         secretKey
                 )
         );
+    }
+
+    @Override
+    public Duration getDefaultUrlExpirationTime() {
+        return urlDuration;
     }
 
     @Override

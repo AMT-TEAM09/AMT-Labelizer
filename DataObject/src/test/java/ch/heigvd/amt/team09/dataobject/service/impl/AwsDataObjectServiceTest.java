@@ -1,10 +1,7 @@
 package ch.heigvd.amt.team09.dataobject.service.impl;
 
 import ch.heigvd.amt.team09.dataobject.service.interfaces.DataObjectService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
 
 import java.io.IOException;
@@ -17,6 +14,7 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AwsDataObjectServiceTest {
+    private static final String SKIP_CLEANUP_TAG = "skipCleanup";
     private static final Path RESOURCE_PATH = Paths.get("src", "test", "resources");
     private static final Path IMAGE_FILE = RESOURCE_PATH.resolve("image.jpg");
     private static final String TEST_OBJECT_NAME = "test-object";
@@ -31,8 +29,11 @@ class AwsDataObjectServiceTest {
     }
 
     @AfterEach
-    void tearDown() {
-        //TODO voir comment gérer les exceptions
+    void tearDown(TestInfo testInfo) {
+        if (testInfo.getTags().contains(SKIP_CLEANUP_TAG)) {
+            return;
+        }
+
         if (dataObjectService.exists(TEST_OBJECT_NAME)) {
             assertDoesNotThrow(() -> dataObjectService.delete(TEST_OBJECT_NAME));
         }
@@ -40,6 +41,42 @@ class AwsDataObjectServiceTest {
         if (dataObjectService.exists(TEST_FOLDER)) {
             assertDoesNotThrow(() -> dataObjectService.delete(TEST_FOLDER, true));
         }
+    }
+
+    @Test
+    @Tag(SKIP_CLEANUP_TAG)
+    @Disabled("Le fichier .env doit être adapté manuellement: pas de AWS_URL_DURATION")
+    void new_noUrlDurationSpecified_useDefaultUrlDuration() {
+        // when
+        var service = new AwsDataObjectService();
+
+        // then
+        assertEquals(AwsDataObjectService.DEFAULT_URL_EXPIRATION_TIME, service.getDefaultUrlExpirationTime());
+    }
+
+    @Test
+    @Tag(SKIP_CLEANUP_TAG)
+    @Disabled("Le fichier .env doit être adapté manuellement: AWS_URL_DURATION=5")
+    void new_urlDurationSpecified_urlDurationIsSet() {
+        // given
+        var duration = Duration.ofMinutes(5);
+
+        // when
+        var service = new AwsDataObjectService();
+
+        // then
+        assertEquals(duration, service.getDefaultUrlExpirationTime());
+    }
+
+    @Test
+    @Tag(SKIP_CLEANUP_TAG)
+    @Disabled("Le fichier .env doit être adapté manuellement: AWS_URL_DURATION=invalid")
+    void new_urlDurationSpecifiedButInvalid_useDefaultUrlDuration() {
+        // when
+        var service = new AwsDataObjectService();
+
+        // then
+        assertEquals(AwsDataObjectService.DEFAULT_URL_EXPIRATION_TIME, service.getDefaultUrlExpirationTime());
     }
 
     @Test

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -108,26 +107,21 @@ public class DataObjectController {
 
     @GetMapping("data-object/v1/objects")
     public DataObjectResponseModel publish(@RequestParam String objectName,
-                                           @RequestParam Optional<@Positive Integer> duration) {
+                                           @RequestParam Optional<@Positive Long> duration) {
         if (!dataObjectService.exists(objectName)) {
             throw new ObjectNotFoundException(objectName);
         }
 
         try {
-            URL url;
-
-            if (duration.isPresent()) {
-                var durationInMs = Duration.ofMillis(duration.get());
-                url = dataObjectService.publish(objectName, durationInMs);
-            } else {
-                url = dataObjectService.publish(objectName);
-            }
+            var url = duration.isPresent()
+                    ? dataObjectService.publish(objectName, Duration.ofSeconds(duration.get()))
+                    : dataObjectService.publish(objectName);
 
             return assembler.toModel(
                     new DataObjectWithUrl(
                             objectName,
                             url,
-                            duration.orElse(DataObjectService.DEFAULT_URL_EXPIRATION_TIME.toMillisPart())
+                            duration.orElse(dataObjectService.getDefaultUrlExpirationTime().toSeconds())
                     )
             ).withSelf(ResponseModelAssembler.LINK_PUBLISH);
         } catch (DataObjectService.ObjectNotFoundException e) {
