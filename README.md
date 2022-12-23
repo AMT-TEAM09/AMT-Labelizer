@@ -1,12 +1,23 @@
-# Labelizer
+# Microservices
 
 ### Auteurs : Stéphane Marengo & Géraud Silvestri
 
+
+Ce repository contient 3 sous-projets:
+
+- [Labelizer](./Labelizer/) - microservice permettant d'analyser des images
+- [DataObject](./DataObject/) - microservice permettant de gérer des objets
+- [SimpleClient](./SimpleClient/) - permet de tester le fonctionnement des deux microservices
+
+## Introduction
+
+Ce projet permet de gérer des objets (fichiers) et d'analyser des images. Il est composé de deux microservices : [DataObject](./DataObject/) et [Labelizer](./Labelizer/).
+
+Les microservices sont dockerisés et peuvent être lancés avec docker-compose.
+
 ## :warning: Pré-requis
 
-[Java 17](https://adoptium.net/temurin/releases/)
-
-[Maven 3.8](https://maven.apache.org/download.cgi) avec la variable d'environnement `JAVA_HOME` pointant sur le jdk 17.
+[Docker](https://www.docker.com/)
 
 Un utilisateur [AWS IAM](https://aws.amazon.com/iam/) avec les droits suivants :
 
@@ -34,127 +45,40 @@ Un utilisateur [AWS IAM](https://aws.amazon.com/iam/) avec les droits suivants :
 }
 ```
 
-## Récupération les dépendances
+## :roller_coaster: Lancement avec build d'image
 
-Pour récupérer la liste des dépendances, il faut lancer la commande suivante à la racine du projet :
+La première étape est de créer un fichier `.env` à la racine du projet avec les informations suivantes :
 
-```
-mvn dependency:resolve
-```
-
-## :wrench: Installation
-
-Pour installer le projet, il suffit de cloner le projet et de lancer la commande suivante depuis sa racine :
-
-```
-mvn install
-```
-
-Il est possible d'éviter de lancer les tests en ajoutant l'option `-DskipTests` à la commande précédente.
-
-```
-mvn install -DskipTests
-```
-
-Un fichier `.env` doit ensuite être créé à la racine du projet avec les informations suivantes :
-
-```
+```bash
 AWS_ACCESS_KEY_ID= ...
 AWS_SECRET_ACCESS_KEY= ...
 AWS_BUCKET_NAME= ...
 AWS_REGION= ...
-AWS_URL_DURATION_IN_SECONDS= ... # Durée de validité des liens générés lors de la publication des objets
 ```
 
-La region doit être définie selon la colonne `Region` du tableau présenté dans  
-[la documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html#Concepts.RegionsAndAvailabilityZones.Regions)
-.
+La region doit être définie selon la colonne `Region` du tableau présenté dans [la documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html#Concepts.RegionsAndAvailabilityZones.Regions).
 
-## Tests
+Un paramètre `AWS_URL_DURATION` peut être ajouté pour définir la durée de validité des urls générées (en minutes) par le service `DataObject`. La valeur par défaut est décrite dans le [README](./DataObject/README.md) du service en question.
 
-Pour lancer les tests, il suffit de lancer la commande suivante :
+Pour lancer les microservices, il suffit de lancer la commande suivante :
 
-```
-mvn test
+```bash
+docker compose -f docker-compose.local.yml up
 ```
 
-Pour lancer une classe de tests spécifique:
+Cette commande va construire les images des microservices localement et les lancer. Le paramètre `-d` peut être ajouté pour lancer les microservices en arrière-plan.
 
-```
-mvn -Dtest=NomDeLaClasseDeTest test
-```
+Les microservices sont ensuite accessibles sur les ports suivants :
 
-Pour lancer un test spécifique :
+- DataObject: 8080
+- Labelizer: 8081
 
-```
-mvn -Dtest=NomDeLaClasseDeTest#nomDuTest test
-```
+Ces ports peuvent être modifiés dans le fichier [docker-compose.local.yml](./docker-compose.local.yml).
 
-Plus d'infos, consultez
-la [documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/single-test.html)
+Une fois les microservices lancés, il est possible de tester leur fonctionnement avec le [SimpleClient](./SimpleClient/).
 
-## :rocket: Lancement
+## :roller_coaster: Lancement en utilisant les images DockerHub
 
-Utilisez les commandes suivantes pour créer le `.jar` et le lancer :
+Un second fichier [docker-compose.yml](./docker-compose.yml) est disponible pour lancer les microservices en utilisant les images qui se trouvent sur DockerHub.
 
-```
-mvn package
-
-cd target
-java -jar app.jar
-```
-
-> :warning: **Il est nécessaire que le fichier `.env` se situe dans le même dossier.**
-
-## Structure du projet
-
-```
-Labelizer
-│   .env                    # Fichier de configuration
-│   .gitignore
-│   pom.xml
-│   README.md
-│
-├───.github
-│   └───workflows
-│           pipeline.yaml   # Défini une action GitHub pour lancer les tests
-│
-├───target                  # Contient le projet compilé, notamment le .jar
-│
-└───src
-    ├───main
-    │   └───java            # Contient les classes du projet
-    │
-    └───test
-        ├───java            # Contient les classes de tests
-        └───resources
-```
-
-## :roller_coaster: Lancement depuis la machine EC2
-
-Après s'être connecté à l'instance EC2, il faut se rendre dans le dossier du projet :
-
-```
-cd Labelizer
-```
-
-et lancer la commande suivante pour afficher l'aide :
-
-```
-java -jar app.jar -h
-```
-
-Exemple de lancement pour tester facilement :
-
-```
-java -jar app.jar -m 2 https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/1200px-Cat_November_2010-1a.jpg -r cat
-```
-
-Grâce au paramètre `-r`, les résultats seront disponibles sur le bucket S3 dans l'objet `cat`.
-
-
-## Docker
-
-Pour build faire `docker build --build-arg .`. Il peut y avoir une erreur, si c'est le cas aller sur docker Desktop -> options -> docker engine et mettre buildkit a false.
-
-`docker-compose --env-file .env up`
+Le reste de la procédure est identique à la précédente.
