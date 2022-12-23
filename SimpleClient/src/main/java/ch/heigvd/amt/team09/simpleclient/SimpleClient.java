@@ -24,7 +24,7 @@ public class SimpleClient {
         var app = new SimpleClient();
         var jcommander = JCommander.newBuilder()
                 .addObject(app)
-                .programName("app")
+                .programName(SimpleClient.class.getSimpleName())
                 .build();
 
         try {

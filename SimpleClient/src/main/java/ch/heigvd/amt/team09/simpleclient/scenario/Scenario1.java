@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Scenario1 extends Scenario {
-
-
     @Override
     protected String name() {
         return "Scenario 1 : tout est nouveau";

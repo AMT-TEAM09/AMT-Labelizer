@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mizosoft.methanol.Methanol;
 import com.github.mizosoft.methanol.MultipartBodyPublisher;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 
 import java.io.IOException;
@@ -16,31 +17,27 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class Scenario {
-    private static final String DATA_OBJECT_URI = "http://localhost:8080/data-object/v1/objects";
-    private static final String DATA_OBJECT_UPLOAD_URI = DATA_OBJECT_URI;
-    private static final String DATA_OBJECT_PUBLISH_URI = DATA_OBJECT_URI;
-    private static final String DATA_OBJECT_DELETE_ROOT_URI = DATA_OBJECT_URI;
-    private static final String DATA_OBJECT_DELETE_OBJECT_URI = DATA_OBJECT_URI;
-    private static final String ANALYZER_URI = "http://localhost:8081/analyzer/v1/url";
-
     private static final Path IMAGE = Path.of("src", "main", "resources", "image.jpg");
     private static final String OBJECT_KEY = "scenario-object";
     private static final String OBJECT_RESULTS_KEY = "scenario-results";
 
     private final Methanol client;
+    private final String dataObjectURI;
+    private final String analyzerURI;
 
     protected Scenario() {
+        var dotenv = Dotenv.load();
         client = Methanol.newBuilder()
                 .defaultHeader("Content-Type", "application/json")
                 .build();
+
+        this.dataObjectURI = Objects.requireNonNull(dotenv.get("DATA_OBJECT_URI"), "DATA_OBJECT_URI is not set");
+        this.analyzerURI = Objects.requireNonNull(dotenv.get("ANALYZER_URI"), "ANALYZER_URI is not set");
     }
 
     protected static boolean isUrlValid(URL url) {
@@ -144,7 +141,7 @@ public abstract class Scenario {
 
     private boolean objectExistsRequest(String objectName) throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(DATA_OBJECT_PUBLISH_URI + "?objectName=" + objectName))
+                .uri(URI.create(dataObjectURI + "?objectName=" + objectName))
                 .method("HEAD", HttpRequest.BodyPublishers.noBody())
                 .build();
 
@@ -158,7 +155,7 @@ public abstract class Scenario {
 
     protected int deleteRootRequest() throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(DATA_OBJECT_DELETE_ROOT_URI + "?recursive=true"))
+                .uri(URI.create(dataObjectURI + "?recursive=true"))
                 .DELETE()
                 .build();
 
@@ -167,7 +164,7 @@ public abstract class Scenario {
 
     private boolean deleteObjectRequest(String objectName) throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(DATA_OBJECT_DELETE_OBJECT_URI + "?objectName=" + objectName))
+                .uri(URI.create(dataObjectURI + "?objectName=" + objectName))
                 .DELETE()
                 .build();
 
@@ -198,7 +195,7 @@ public abstract class Scenario {
                 .build();
 
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(DATA_OBJECT_UPLOAD_URI))
+                .uri(URI.create(dataObjectURI))
                 .POST(multipartBody)
                 .build();
 
@@ -207,7 +204,7 @@ public abstract class Scenario {
 
     private Optional<URL> publishRequest(String key) throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(DATA_OBJECT_PUBLISH_URI + "?objectName=" + key))
+                .uri(URI.create(dataObjectURI + "?objectName=" + key))
                 .GET()
                 .build();
 
@@ -231,7 +228,7 @@ public abstract class Scenario {
                 """.formatted(imageUrl);
 
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(ANALYZER_URI))
+                .uri(URI.create(analyzerURI))
                 .POST(HttpRequest.BodyPublishers.ofString(postData))
                 .build();
 

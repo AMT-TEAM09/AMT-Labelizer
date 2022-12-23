@@ -44,4 +44,8 @@ jobs:
 
       - name: Run tests
         working-directory: ./SimpleClient
-        run: mvn package exec:java
+        run: |
+          touch .env
+          echo DATA_OBJECT_URI=http://localhost:8080/data-object/v1/objects >> .env
+          echo ANALYZER_URI=http://localhost:8081/analyzer/v1/url >> .env
+          mvn package exec:java
