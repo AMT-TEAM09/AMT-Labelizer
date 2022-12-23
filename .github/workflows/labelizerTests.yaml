@@ -1,0 +1,35 @@
+name: "Labelizer - Tests"
+on:
+  push:
+    paths:
+      - "Labelizer/**"
+      - ".github/workflows/labelizerTests.yaml"
+
+env:
+  TEST_TAG: labelizer:test
+
+jobs:
+  tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Build
+        uses: docker/build-push-action@v3
+        with:
+          context: Labelizer/.
+          load: true
+          target: test
+          tags: ${{ env.TEST_TAG }}
+
+      - name: Run tests
+        run: |
+          docker run \
+          -e AWS_ACCESS_KEY_ID='${{ secrets.AWS_ACCESS_KEY_ID }}' \
+          -e AWS_SECRET_ACCESS_KEY='${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
+          -e AWS_REGION='eu-west-2' \
+          --rm ${{ env.TEST_TAG }}

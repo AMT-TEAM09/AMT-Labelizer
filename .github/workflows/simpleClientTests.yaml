@@ -1,0 +1,51 @@
+name: "SimpleClient - Integration Tests"
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    paths:
+      - "SimpleClient/**"
+      - ".github/workflows/simpleClientTests.yaml"
+
+concurrency:
+  group: data-object-${{ github.ref }}
+
+jobs:
+  tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Setup Env File
+        run: |
+          touch .env
+          echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
+          echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
+          echo AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} >> .env
+          echo AWS_REGION=eu-west-2 >> .env
+
+      - name: Docker Compose Build
+        run: docker compose -f docker-compose.local.yml build
+
+      - name: Docker Compose Up
+        run: docker compose -f docker-compose.local.yml up -d
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Run tests
+        working-directory: ./SimpleClient
+        run: |
+          touch .env
+          echo DATA_OBJECT_URI=http://localhost:8080/data-object/v1/objects >> .env
+          echo ANALYZER_URI=http://localhost:8081/analyzer/v1/url >> .env
+          mvn package exec:java
