@@ -34,6 +34,8 @@ public class DataObjectController {
         this.assembler = assembler;
     }
 
+    // pas pénalisé mais mettez le /data-object/v1 sur le controller avec
+    // @RequestMapping pour éviter de le répéter, ça améliore la lisibilité
     @DeleteMapping(value = "data-object/v1/objects")
     public ResponseEntity<Object> delete(@RequestParam Optional<Boolean> recursive) {
         if (!dataObjectService.exists()) {
